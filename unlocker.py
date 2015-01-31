@@ -40,7 +40,6 @@ Offset  Length  struct Type Description
 0x18/24 0x30/48 48B    byte Data
 """
 
-import optparse
 import os
 import sys
 import struct
@@ -63,25 +62,25 @@ def bytetohex(bytestr):
 
 
 def printkey(i, smc_key, smc_data):
-    print str(i).zfill(3)  \
-    + ' ' + smc_key[0][::-1] \
-    + ' ' + str(smc_key[1]).zfill(2) \
-    + ' ' + smc_key[2][::-1].replace('\x00', ' ') \
-    + ' ' + '{0:#0{1}x}'.format(smc_key[3],4) \
-    + ' ' + hex(smc_key[4]) \
-    + ' ' + bytetohex(smc_data)
+    print str(i+1).zfill(3) \
+        + ' ' + smc_key[0][::-1] \
+        + ' ' + str(smc_key[1]).zfill(2) \
+        + ' ' + smc_key[2][::-1].replace('\x00', ' ') \
+        + ' ' + '{0:#0{1}x}'.format(smc_key[3], 4) \
+        + ' ' + hex(smc_key[4]) \
+        + ' ' + bytetohex(smc_data)
 
 
 def patchkeys(f, key):
-
     # Setup struct pack string
+    global smc_new_memptr
     key_pack = '=4sB4sB6xQ'
 
     # Do Until OSK1 read
     i = 0
     while True:
 
-        #  Read key into struct str and data byte str
+        # Read key into struct str and data byte str
         offset = key + (i * 72)
         f.seek(offset)
         smc_key = struct.unpack(key_pack, f.read(24))
@@ -148,7 +147,6 @@ def patchkeys(f, key):
 
 
 def patchsmc(name):
-
     with open(name, 'r+b') as f:
 
         # Read file into string variable
@@ -178,49 +176,33 @@ def patchsmc(name):
         # Find '$Adr' key only V1 table
         smc_adr = vmx.find(adr_key)
 
-        # Read the vSMC version 0 header
-        f.seek(smc_header_v0_offset)
-        appleSMCTableV0 = struct.unpack('=QII', f.read(16))
-
-        # Read the vSMC version 1 header
-        f.seek(smc_header_v1_offset)
-        appleSMCTableV1 = struct.unpack('=QII', f.read(16))
-
         # Print vSMC0 tables and keys
-        print 'appleSMCTableV0 (smc.version = "0")'
-        print 'appleSMCTableV0 Address      : ' + hex(smc_header_v0_offset)
-        print 'appleSMCTableV0 Private Key #: 0xF2'
-        print 'appleSMCTableV0 Public Key  #: 0xF0'
+        print 'applesmctablev0 (smc.version = "0")'
+        print 'applesmctablev0 Address      : ' + hex(smc_header_v0_offset)
+        print 'applesmctablev0 Private Key #: 0xF2/242'
+        print 'applesmctablev0 Public Key  #: 0xF0/240'
 
         if (smc_adr - smc_key0) != 72:
-            print 'appleSMCTableV0 Table        : ' + hex(smc_key0)
+            print 'applesmctablev0 Table        : ' + hex(smc_key0)
             patchkeys(f, smc_key0)
         elif (smc_adr - smc_key1) != 72:
-            print 'appleSMCTableV0 Table        : ' + hex(smc_key1)
+            print 'applesmctablev0 Table        : ' + hex(smc_key1)
             patchkeys(f, smc_key1)
-        else:
-            print 'appleSMCTableV0 Error        : ' \
-                  + hex((appleSMCTableV0[0] - data_offset) - smc_key0) + ' ' \
-                  + hex((appleSMCTableV0[0] - data_offset) - smc_key1)
 
         print
 
         # Print vSMC1 tables and keys
-        print 'appleSMCTableV1 (smc.version = "1")'
-        print 'appleSMCTableV1 Address      : ' + hex(smc_header_v1_offset)
-        print 'appleSMCTableV1 Private Key #: 0x01B0'
-        print 'appleSMCTableV1 Public Key  #: 0x01B4'
+        print 'applesmctablev1 (smc.version = "1")'
+        print 'applesmctablev1 Address      : ' + hex(smc_header_v1_offset)
+        print 'applesmctablev1 Private Key #: 0x01B4/436'
+        print 'applesmctablev1 Public Key  #: 0x01B0/432'
 
         if (smc_adr - smc_key0) == 72:
-            print 'appleSMCTableV1 Table        : ' + hex(smc_key0)
+            print 'applesmctablev1 Table        : ' + hex(smc_key0)
             patchkeys(f, smc_key0)
         elif (smc_adr - smc_key1) == 72:
-            print 'appleSMCTableV1 Table        : ' + hex(smc_key1)
+            print 'applesmctablev1 Table        : ' + hex(smc_key1)
             patchkeys(f, smc_key1)
-        else:
-            print 'appleSMCTableV1 Error        : ' \
-                  + hex((appleSMCTableV1[0] - data_offset) - smc_key0) + ' ' \
-                  + hex((appleSMCTableV1[0] - data_offset) - smc_key1)
 
         print
 
@@ -228,8 +210,8 @@ def patchsmc(name):
         f.flush()
         f.close()
 
-def patchbase(name):
 
+def patchbase(name):
     # Patch file
     print 'GOS Patching: ' + name
     f = open(name, 'r+b')
@@ -260,7 +242,7 @@ def patchbase(name):
             f.write('\xBF')
             print 'GOS Patched flag @: ' + hex(offset)
         else:
-            print 'GOS Unknown flag @: ' + hex(offset) + '/' + hex(flag)
+            print 'GOS Unknown flag @: {0}/{1}'.format(hex(offset), hex(flag))
 
         offset += 33
 
@@ -314,7 +296,7 @@ def main():
         print('Unknown Operating System: ' + osname)
         return
 
-    #  Patch the vmx executables skipping stats version for Player
+    # Patch the vmx executables skipping stats version for Player
     patchsmc(vmx)
     patchsmc(vmx_debug)
     try:
