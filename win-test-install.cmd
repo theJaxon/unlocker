@@ -34,7 +34,7 @@ xcopy /F /Y "%InstallPath%x64\vmware-vmx-stats.exe" .\backup\x64
 xcopy /F /Y "%InstallPath%vmwarebase.dll" .\backup\
 
 echo Patching...
-unlocker.exe
+python unlocker.py
 
 xcopy /F /Y .\tools\darwin.* "%InstallPath%"
 
