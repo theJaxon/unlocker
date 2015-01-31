@@ -44,6 +44,10 @@ import os
 import sys
 import struct
 
+if sys.version_info < (2, 7):
+    sys.stderr.write('You need Python 2.7 or later\n')
+    sys.exit(1)
+
 # Setup imports depending on whether IronPython or CPython
 if sys.platform == 'win32' \
         or sys.platform == 'cli':
@@ -177,31 +181,31 @@ def patchsmc(name):
         smc_adr = vmx.find(adr_key)
 
         # Print vSMC0 tables and keys
-        print 'applesmctablev0 (smc.version = "0")'
-        print 'applesmctablev0 Address      : ' + hex(smc_header_v0_offset)
-        print 'applesmctablev0 Private Key #: 0xF2/242'
-        print 'applesmctablev0 Public Key  #: 0xF0/240'
+        print 'appleSMCTableV0 (smc.version = "0")'
+        print 'appleSMCTableV0 Address      : ' + hex(smc_header_v0_offset)
+        print 'appleSMCTableV0 Private Key #: 0xF2/242'
+        print 'appleSMCTableV0 Public Key  #: 0xF0/240'
 
         if (smc_adr - smc_key0) != 72:
-            print 'applesmctablev0 Table        : ' + hex(smc_key0)
+            print 'appleSMCTableV0 Table        : ' + hex(smc_key0)
             patchkeys(f, smc_key0)
         elif (smc_adr - smc_key1) != 72:
-            print 'applesmctablev0 Table        : ' + hex(smc_key1)
+            print 'appleSMCTableV0 Table        : ' + hex(smc_key1)
             patchkeys(f, smc_key1)
 
         print
 
         # Print vSMC1 tables and keys
-        print 'applesmctablev1 (smc.version = "1")'
-        print 'applesmctablev1 Address      : ' + hex(smc_header_v1_offset)
-        print 'applesmctablev1 Private Key #: 0x01B4/436'
-        print 'applesmctablev1 Public Key  #: 0x01B0/432'
+        print 'appleSMCTableV1 (smc.version = "1")'
+        print 'appleSMCTableV1 Address      : ' + hex(smc_header_v1_offset)
+        print 'appleSMCTableV1 Private Key #: 0x01B4/436'
+        print 'appleSMCTableV1 Public Key  #: 0x01B0/432'
 
         if (smc_adr - smc_key0) == 72:
-            print 'applesmctablev1 Table        : ' + hex(smc_key0)
+            print 'appleSMCTableV1 Table        : ' + hex(smc_key0)
             patchkeys(f, smc_key0)
         elif (smc_adr - smc_key1) == 72:
-            print 'applesmctablev1 Table        : ' + hex(smc_key1)
+            print 'appleSMCTableV1 Table        : ' + hex(smc_key1)
             patchkeys(f, smc_key1)
 
         print
@@ -242,7 +246,7 @@ def patchbase(name):
             f.write('\xBF')
             print 'GOS Patched flag @: ' + hex(offset)
         else:
-            print 'GOS Unknown flag @: {0}/{1}'.format(hex(offset), hex(flag))
+            print 'GOS Unknown flag @: ' + hex(offset) + '/' + hex(int(flag))
 
         offset += 33
 
