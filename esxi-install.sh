@@ -11,5 +11,7 @@ export PATH=/bin:/sbin:/usr/bin:/usr/sbin
 # Copy patch local.sh
 echo Installing local.sh 
 cp local.sh /etc/rc.local.d/local.sh
+cat unlocker.py >> /etc/rc.local.d/local.sh
+echo END >> /etc/rc.local.d/local.sh
 chmod +x /etc/rc.local.d/local.sh
 echo Success - please now restart the server!
