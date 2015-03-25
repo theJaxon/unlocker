@@ -23,7 +23,7 @@ cp -v /usr/lib/vmware/bin/vmware-vmx-stats ./backup/
 cp -v /usr/lib/vmware/lib/libvmwarebase.so.0/libvmwarebase.so.0 ./backup/
 
 echo Patching...
-python2 ./vmxsmc.py
+python2 ./unlocker.py
 
 cp ./tools/darwin.* /usr/lib/vmware/isoimages/
 

@@ -23,7 +23,6 @@ cp -v /Applications/VMware\ Fusion.app/Contents/Library/vmware-vmx-stats ./backu
 cp -v /Applications/VMware\ Fusion.app/Contents/Frameworks/libvmwarebase.dylib ./backup/
 
 echo Patching...
-python ./vmxsmc.py
+python ./unlocker.py
 
 echo Finished!
-

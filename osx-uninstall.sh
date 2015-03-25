@@ -24,4 +24,3 @@ echo Removing backup files...
 rm -rf ./backup
 
 echo Finished!
-

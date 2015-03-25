@@ -25,4 +25,3 @@ rm -rf ./backup
 rm -f /usr/lib/vmware/isoimages/darwin.*
 
 echo Finished!
-

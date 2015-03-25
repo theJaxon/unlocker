@@ -8,10 +8,13 @@ echo Copyright: Dave Parsons 2011-15
 # Ensure we only use unmodified commands
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin
 
-# Copy patch local.sh
+# Copy patch to local.sh
 echo Installing local.sh 
-cp local.sh /etc/rc.local.d/local.sh
-cat unlocker.py >> /etc/rc.local.d/local.sh
+cp local-template.sh local.sh
+cat unlocker.py >> local.sh
 echo END >> /etc/rc.local.d/local.sh
-chmod +x /etc/rc.local.d/local.sh
+chmod +x local.sh
+cp /etc/rc.local.d/local.sh local-original.sh
+cat local-original.sh >> local.sh
+cp local.sh /etc/rc.local.d/local.sh
 echo Success - please now restart the server!
