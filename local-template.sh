@@ -2,9 +2,9 @@
 set -e
 set -x
 
-echo VMware ESXi 5.x Unlocker 1.3.1
+echo VMware ESXi 6.x Unlocker 2.0.5
 echo ===============================
-echo Copyright: Dave Parsons 2011-14
+echo Copyright: Dave Parsons 2011-15
 
 # Ensure we only use unmodified commands
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin

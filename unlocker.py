@@ -65,8 +65,9 @@ def bytetohex(bytestr):
     return ''.join(['%02X ' % ord(x) for x in bytestr]).strip()
 
 
-def printkey(i, smc_key, smc_data):
+def printkey(i, offset, smc_key, smc_data):
     print str(i+1).zfill(3) \
+        + ' ' + hex(offset) \
         + ' ' + smc_key[0][::-1] \
         + ' ' + str(smc_key[1]).zfill(2) \
         + ' ' + smc_key[2][::-1].replace('\x00', ' ') \
@@ -74,10 +75,54 @@ def printkey(i, smc_key, smc_data):
         + ' ' + hex(smc_key[4]) \
         + ' ' + bytetohex(smc_data)
 
+E_CLASS64 = 2;
+E_SHT_RELA = 4;
 
-def patchkeys(f, key):
+def patchELF(f, oldOffset, newOffset):
+    f.seek(0)
+    magic = f.read(4)
+    if not magic == b'\x7fELF':
+        raise Exception('Magic number does not match')
+
+    ei_class = struct.unpack('=B', f.read(1))[0]
+    if ei_class != E_CLASS64:
+	raise Exception('Not 64bit elf header: ' + ei_class)
+
+    f.seek(40)
+    e_shoff = struct.unpack('=Q', f.read(8))[0]
+    f.seek(58)
+    e_shentsize = struct.unpack('=H', f.read(2))[0]
+    e_shnum = struct.unpack('=H', f.read(2))[0]
+    e_shstrndx = struct.unpack('=H', f.read(2))[0]
+
+    #print 'e_shoff: 0x{:x} e_shentsize: 0x{:x} e_shnum:0x{:x} e_shstrndx:0x{:x}'.format(e_shoff, e_shentsize, e_shnum, e_shstrndx)
+
+    for i in range(0, e_shnum):
+        f.seek(e_shoff + i * e_shentsize)
+        e_sh = struct.unpack('=LLQQQQLLQQ', f.read(e_shentsize))
+        e_sh_name = e_sh[0]
+        e_sh_type = e_sh[1]
+        e_sh_offset = e_sh[4]
+        e_sh_size = e_sh[5]
+        e_sh_entsize = e_sh[9]
+        if e_sh_type == E_SHT_RELA:
+            e_sh_nument = e_sh_size / e_sh_entsize
+            #print 'RELA at 0x{:x} with {:d} entries'.format(e_sh_offset, e_sh_nument)
+            for j in range(0, e_sh_nument):
+                f.seek(e_sh_offset + e_sh_entsize * j)
+                rela = struct.unpack('=QQq', f.read(e_sh_entsize))
+                r_offset = rela[0]
+                r_info = rela[1]
+                r_addend = rela[2]
+                if r_addend == oldOffset:
+                    r_addend = newOffset;
+                    f.seek(e_sh_offset + e_sh_entsize * j)
+                    f.write(struct.pack('=QQq', r_offset, r_info, r_addend))
+                    print 'Relocation modified at: ' + hex(e_sh_offset + e_sh_entsize * j)
+
+
+def patchkeys(f, vmx, key, osname):
     # Setup struct pack string
-    global smc_new_memptr
     key_pack = '=4sB4sB6xQ'
 
     # Do Until OSK1 read
@@ -97,12 +142,13 @@ def patchkeys(f, key):
             # Use the +LKS data routine for OSK0/1
             smc_new_memptr = smc_key[4]
             print '+LKS Key: '
-            printkey(i, smc_key, smc_data)
+            printkey(i, offset, smc_key, smc_data)
 
         elif smc_key[0] == '0KSO':
             # Write new data routine pointer from +LKS
             print 'OSK0 Key Before:'
-            printkey(i, smc_key, smc_data)
+            printkey(i, offset, smc_key, smc_data)
+            smc_old_memptr = smc_key[4]
             f.seek(offset)
             f.write(struct.pack(key_pack, smc_key[0], smc_key[1], smc_key[2], smc_key[3], smc_new_memptr))
             f.flush()
@@ -118,12 +164,13 @@ def patchkeys(f, key):
             smc_key = struct.unpack(key_pack, f.read(24))
             smc_data = f.read(smc_key[1])
             print 'OSK0 Key After:'
-            printkey(i, smc_key, smc_data)
+            printkey(i, offset, smc_key, smc_data)
 
         elif smc_key[0] == '1KSO':
             # Write new data routine pointer from +LKS
             print 'OSK1 Key Before:'
-            printkey(i, smc_key, smc_data)
+            printkey(i, offset, smc_key, smc_data)
+            smc_old_memptr = smc_key[4]
             f.seek(offset)
             f.write(struct.pack(key_pack, smc_key[0], smc_key[1], smc_key[2], smc_key[3], smc_new_memptr))
             f.flush()
@@ -139,7 +186,7 @@ def patchkeys(f, key):
             smc_key = struct.unpack(key_pack, f.read(24))
             smc_data = f.read(smc_key[1])
             print 'OSK1 Key After:'
-            printkey(i, smc_key, smc_data)
+            printkey(i, offset, smc_key, smc_data)
 
             # Finished so get out of loop
             break
@@ -148,9 +195,9 @@ def patchkeys(f, key):
             pass
 
         i += 1
+    return smc_old_memptr, smc_new_memptr
 
-
-def patchsmc(name):
+def patchsmc(name, osname):
     with open(name, 'r+b') as f:
 
         # Read file into string variable
@@ -188,10 +235,10 @@ def patchsmc(name):
 
         if (smc_adr - smc_key0) != 72:
             print 'appleSMCTableV0 Table        : ' + hex(smc_key0)
-            patchkeys(f, smc_key0)
+            smc_old_memptr, smc_new_memptr = patchkeys(f, vmx, smc_key0, osname)
         elif (smc_adr - smc_key1) != 72:
             print 'appleSMCTableV0 Table        : ' + hex(smc_key1)
-            patchkeys(f, smc_key1)
+            smc_old_memptr, smc_new_memptr = patchkeys(f, vmx, smc_key1, osname)
 
         print
 
@@ -203,12 +250,18 @@ def patchsmc(name):
 
         if (smc_adr - smc_key0) == 72:
             print 'appleSMCTableV1 Table        : ' + hex(smc_key0)
-            patchkeys(f, smc_key0)
+            smc_old_memptr, smc_new_memptr = patchkeys(f, vmx, smc_key0, osname)
         elif (smc_adr - smc_key1) == 72:
             print 'appleSMCTableV1 Table        : ' + hex(smc_key1)
-            patchkeys(f, smc_key1)
+            smc_old_memptr, smc_new_memptr = patchkeys(f, vmx, smc_key1, osname)
 
         print
+
+        # Find matching RELA record in .rela.dyn in ESXi ELF files
+        # This is temporary code until proper ELF parsing written
+        if osname == 'vmkernel':
+            print 'Modifying RELA records from: ' + hex(smc_old_memptr) + ' to ' + hex(smc_new_memptr)
+            patchELF(f, smc_old_memptr, smc_new_memptr)
 
         # Tidy up
         f.flush()
@@ -301,10 +354,10 @@ def main():
         return
 
     # Patch the vmx executables skipping stats version for Player
-    patchsmc(vmx)
-    patchsmc(vmx_debug)
+    patchsmc(vmx, osname)
+    patchsmc(vmx_debug, osname)
     try:
-        patchsmc(vmx_stats)
+        patchsmc(vmx_stats, osname)
     except IOError:
         pass
 

@@ -1,2 +1,6 @@
 backup/
 .idea/
+unlocker/build
+unlocker/dist
+dumpsmc/build
+dumpsmc/dist

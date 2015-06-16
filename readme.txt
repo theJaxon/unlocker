@@ -4,7 +4,7 @@ Mac OS X Unlocker for VMware V2.0
 1. Introduction
 ---------------
 
-Unlocker 2 is designed for Workstation 11, Player 7 and Fusion 7.
+Unlocker 2 is designed for Workstation 11, Player 7, ESXi 6 and Fusion 7.
 
 If you are using an earlier product please continue using Unlocker 1 
 
@@ -13,7 +13,7 @@ Version 2 has been tested against:
 * Workstation 11 on Windows and Linux
 * Player 7 on Windows and Linux
 * Fusion 7 on Mavericks and Yosemite
-* (Currently is does not work on ESXi 6.0)
+* ESXi 6.0
 
 The patch code carries out the following modifications dependent on the product
 being patched:
@@ -25,7 +25,7 @@ being patched:
 Note that not all products recognise the darwin.iso via install tools menu item.
 You will have to manually mount the darwin.iso for example on Workstation and Player.
 
-The vmwarebase code does not need to be patched on OS X so you will see a
+The vmwarebase code does not need to be patched on OS X or ESXi so you will see a
 message on those systems telling you that it will not be patched.
 
 In all cases make sure VMware is not running, and any background guests have
@@ -38,7 +38,7 @@ constrains some modules that can be used.
 2. Prerequisites
 ----------------
 
-The code requires Python 2.7 to work. Most Linux distros and OS X ship with a compatible
+The code requires Python 2.7 to work. Most Linux distros, ESXi and OS X ship with a compatible
 Python interpreter and should work without requiring any additional software.
 
 Windows has a packaged version of the Python script using PyInstaller, and so does not
@@ -47,9 +47,7 @@ require Python to be installed.
 3. Limitations
 --------------
 
-The Unlocker currently does not work on ESXi 6.
-
-Work continues to find solutions to the limitations.
+No known limitations.
 
 4. Windows
 ----------
@@ -80,8 +78,31 @@ by running chmod +x against the 2 files.
 osx-install.sh   - patches VMware
 osx-uninstall.sh - restores VMware
 
+7. ESXi
+-------
+You will need to transfer the zip file to the ESXi host either using vSphere client or SCP.
 
-7. Notes
+Once uploaded you will need to either use the ESXi support console or use SSH to
+run the commands. Use the unzip command to extract the files. 
+
+<<< WARNING: use a datastore volume to run the scripts >>>
+
+Please note that you will need to reboot the host for the patches to become active.
+The patcher is embbedded in a shell script local.sh which is run at boot from /etc/rc.local.d.
+
+You may need to ensure the ESXi scripts have execute permissions
+by running chmod +x against the 2 files.
+
+esxi-install.sh   - patches VMware 
+esxi-uninstall.sh - restores VMware 
+
+Note:
+1. Any changes you have made to local.sh will be lost. If you have made changes to 
+   that file, you will need to merge them into the supplied local.sh file.
+2. The unlocker runs at boot time to patch the relevant files and it now survives 
+   an upgrade or patch to ESXi as local.sh is part of the persisted local state.
+   
+8. Notes
 --------
 
 +-----------------------------------------------------------------------------+
@@ -119,6 +140,9 @@ If you are using a 64-bit installation of OS X:
 Thanks to Zenith432 for originally building the C++ unlocker and Mac Son of Knife
 (MSoK) for all the testing and support.
 
+Thanks also to Sam B for finding the solution for ESXi 6 and helping me with
+debugging expertise. Sam also wrote the code for patching ESXi ELF files.
+
 
 History
 -------
@@ -129,5 +153,7 @@ History
                - Refactored Python code
 07/01/15 2.0.4 - Added View USB Service to Windows batch files
                - Fixed broken GOS Table patching on Linux
+15/06/15 2.0.5 - ESXi 6 working
+               - Latest tools from Fusion 7.1.1
 
 (c) 2011-2015 Dave Parsons
