@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) 2014 Dave Parsons
+Copyright (c) 2014-2015 Dave Parsons & Sam Bingner
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the 'Software'), to deal
@@ -303,11 +303,27 @@ def patchbase(name):
 
         offset += 33
 
-    # # Tidy up
+    # Tidy up
     f.flush()
     f.close()
     print 'GOS Patched: ' + name
 
+
+def patchvmkctl(name):
+    # Patch file
+    print 'smcPresent Patching: ' + name
+    f = open(name, 'r+b')
+
+    # Read file into string variable
+    vmkctl = f.read()
+    applesmc = vmkctl.find('applesmc')
+    f.seek(applesmc)
+    f.write('vmkernel')
+
+    # Tidy up
+    f.flush()
+    f.close()
+    print 'smcPresent Patched: ' + name
 
 def main():
 
@@ -338,6 +354,7 @@ def main():
         vmx_debug = vmx_path + 'vmx-debug'
         vmx_stats = vmx_path + 'vmx-stats'
         vmwarebase = ''
+        libvmkctl = vmx_path + 'libvmkctl.so'
 
     elif osname == 'windows':
         reg = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
@@ -353,6 +370,14 @@ def main():
         print('Unknown Operating System: ' + osname)
         return
 
+    # Test - remove
+    # osname = 'vmkernel'
+    # vmx = 'D:\\vmware\\test\\patched\\vmx'
+    # vmx_debug = 'D:\\vmware\\test\\patched\\vmx-debug'
+    # vmx_stats = 'D:\\vmware\\test\\patched\\vmx-stats'
+    # vmwarebase = ''
+    # libvmkctl = 'D:\\vmware\\test\\patched\\libvmkctl.so'
+
     # Patch the vmx executables skipping stats version for Player
     patchsmc(vmx, osname)
     patchsmc(vmx_debug, osname)
@@ -367,6 +392,9 @@ def main():
         patchbase(vmwarebase)
     else:
         print 'Patching vmwarebase is not required on this system'
+
+    if osname == 'vmkernel':
+        patchvmkctl(libvmkctl)
 
 
 if __name__ == '__main__':

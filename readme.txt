@@ -20,6 +20,7 @@ being patched:
 
 * Fix vmware-vmx and derivatives to allow Mac OS X to boot
 * Fix vmwarebase .dll or .so to allow Apple to be selected during VM creation
+* Fix libvmkctl.so on ESXi 6 to allow use with vCenter
 * A copy of the latest VMware Tools for OS X is included
 
 Note that not all products recognise the darwin.iso via install tools menu item.
@@ -47,7 +48,38 @@ require Python to be installed.
 3. Limitations
 --------------
 
-No known limitations.
+If you are using VMware Player or Workstation on Windows you may get a core dump.
+
+Latest Linux and ESXi products are OK and do not show this problem.
+
++-----------------------------------------------------------------------------+
+| IMPORTANT:                                                                  |
+| ==========                                                                  |
+|                                                                             |
+| If you create a new VM using version 11 hardware VMware will stop and       |
+| create a core dump.There are two options to work around this issue:         |
+|                                                                             |
+| 1. Change the VM to be HW 10 - this does not affect performance.            |
+| 2. Edit the VMX file and add:                                               |
+|    smc.version = "0"                                                        |
+|                                                                             |
++-----------------------------------------------------------------------------+
+
+To remove the check for server versions for OS X Leopard and Snow Leopard
+(10.5 and 10.6) you must use a replacement EFI firwmare module from the firmware
+folder.
+
+If you are using a 32-bit installation of OS X:
+
+1. Copy efi32-srvr.rom to guest folder.
+2. Edit the vmx file and add:
+	efi32.filename = "efi32-srvr.rom"
+
+If you are using a 64-bit installation of OS X:
+
+1. Copy efi64-srvr.rom to guest folder.
+2. Edit the vmx file and add:
+	efi64.filename = "efi64-srvr.rom"
 
 4. Windows
 ----------
@@ -102,38 +134,6 @@ Note:
 2. The unlocker runs at boot time to patch the relevant files and it now survives 
    an upgrade or patch to ESXi as local.sh is part of the persisted local state.
    
-8. Notes
---------
-
-+-----------------------------------------------------------------------------+
-| IMPORTANT:                                                                  |
-| ==========                                                                  |
-|                                                                             |
-| If you create a new VM using version 11 hardware VMware will stop and       |
-| create a core dump.There are two options to work around this issue:         |
-|                                                                             |
-| 1. Change the VM to be HW 10 - this does not affect performance.            |
-| 2. Edit the VMX file and add:                                               |
-|    smc.version = "0"                                                        |
-|                                                                             |
-+-----------------------------------------------------------------------------+
-
-To remove the check for server versions for OS X Leopard and Snow Leopard 
-(10.5 and 10.6) you must use a replacement EFI firwmare module from the firmware
-folder.
-
-If you are using a 32-bit installation of OS X:
-
-1. Copy efi32-srvr.rom to guest folder.
-2. Edit the vmx file and add:
-	efi32.filename = "efi32-srvr.rom"
-
-If you are using a 64-bit installation of OS X:
-
-1. Copy efi64-srvr.rom to guest folder.
-2. Edit the vmx file and add:
-	efi64.filename = "efi64-srvr.rom"
-
 8. Thanks
 ---------
 
@@ -153,7 +153,9 @@ History
                - Refactored Python code
 07/01/15 2.0.4 - Added View USB Service to Windows batch files
                - Fixed broken GOS Table patching on Linux
-15/06/15 2.0.5 - ESXi 6 working
-               - Latest tools from Fusion 7.1.1
+18/06/15 2.0.5 - ESXi 6 working
+               - Latest tools from Fusion 7.1.2
+20/06/15 2.0.6 - ESXi 6 patch for smcPresent vCenter compatibility
+
 
 (c) 2011-2015 Dave Parsons
