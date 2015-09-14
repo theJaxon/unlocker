@@ -20,7 +20,11 @@ mkdir -p "./backup"
 cp -v /usr/lib/vmware/bin/vmware-vmx ./backup/
 cp -v /usr/lib/vmware/bin/vmware-vmx-debug ./backup/
 cp -v /usr/lib/vmware/bin/vmware-vmx-stats ./backup/
-cp -v /usr/lib/vmware/lib/libvmwarebase.so.0/libvmwarebase.so.0 ./backup/
+if [ -d /usr/lib/vmware/lib/libvmwarebase.so.0/ ]; then
+    cp -v /usr/lib/vmware/lib/libvmwarebase.so.0/libvmwarebase.so.0 ./backup/
+elif [ -d /usr/lib/vmware/lib/libvmwarebase.so/ ]; then
+    cp -v /usr/lib/vmware/lib/libvmwarebase.so/libvmwarebase.so ./backup/
+fi
 
 echo Patching...
 python2 ./unlocker.py

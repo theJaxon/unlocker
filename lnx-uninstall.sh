@@ -18,7 +18,11 @@ echo Restoring files...
 cp -v ./backup/vmware-vmx  /usr/lib/vmware/bin/
 cp -v ./backup/vmware-vmx-debug /usr/lib/vmware/bin/
 cp -v ./backup/vmware-vmx-stats /usr/lib/vmware/bin/
-cp -v ./backup/libvmwarebase.so.0 /usr/lib/vmware/lib/libvmwarebase.so.0/
+if [ -d /usr/lib/vmware/lib/libvmwarebase.so.0/ ]; then
+    cp -v ./backup/libvmwarebase.so.0 /usr/lib/vmware/lib/libvmwarebase.so.0/
+elif [ -d /usr/lib/vmware/lib/libvmwarebase.so/ ]; then
+    cp -v ./backup/libvmwarebase.so /usr/lib/vmware/lib/libvmwarebase.so/
+fi
 
 echo Removing backup files...
 rm -rf ./backup

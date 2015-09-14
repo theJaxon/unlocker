@@ -43,6 +43,7 @@ Offset  Length  struct Type Description
 import os
 import sys
 import struct
+import subprocess
 
 if sys.version_info < (2, 7):
     sys.stderr.write('You need Python 2.7 or later\n')
@@ -197,7 +198,7 @@ def patchkeys(f, vmx, key, osname):
         i += 1
     return smc_old_memptr, smc_new_memptr
 
-def patchsmc(name, osname):
+def patchsmc(name, osname, so):
     with open(name, 'r+b') as f:
 
         # Read file into string variable
@@ -259,7 +260,7 @@ def patchsmc(name, osname):
 
         # Find matching RELA record in .rela.dyn in ESXi ELF files
         # This is temporary code until proper ELF parsing written
-        if osname == 'vmkernel':
+        if so == True:
             print 'Modifying RELA records from: ' + hex(smc_old_memptr) + ' to ' + hex(smc_new_memptr)
             patchELF(f, smc_old_memptr, smc_new_memptr)
 
@@ -333,6 +334,8 @@ def main():
     else:
         osname = os.uname()[0].lower()
 
+    vmx_so = False
+
     # Setup default paths
     if osname == 'darwin':
         vmx_path = '/Applications/VMware Fusion.app/Contents/Library/'
@@ -346,13 +349,19 @@ def main():
         vmx = vmx_path + 'vmware-vmx'
         vmx_debug = vmx_path + 'vmware-vmx-debug'
         vmx_stats = vmx_path + 'vmware-vmx-stats'
-        vmwarebase = '/usr/lib/vmware/lib/libvmwarebase.so.0/libvmwarebase.so.0'
+        vmx_version = subprocess.check_output(["vmware", "-v"])
+        if vmx_version.startswith('VMware Workstation 12'):
+            vmx_so = True
+            vmwarebase = '/usr/lib/vmware/lib/libvmwarebase.so/libvmwarebase.so'
+        else:
+            vmwarebase = '/usr/lib/vmware/lib/libvmwarebase.so.0/libvmwarebase.so.0'
 
     elif osname == 'vmkernel':
         vmx_path = '/unlocker/'
         vmx = vmx_path + 'vmx'
         vmx_debug = vmx_path + 'vmx-debug'
         vmx_stats = vmx_path + 'vmx-stats'
+        vmx_so = True
         vmwarebase = ''
         libvmkctl = vmx_path + 'libvmkctl.so'
 
@@ -370,19 +379,11 @@ def main():
         print('Unknown Operating System: ' + osname)
         return
 
-    # Test - remove
-    # osname = 'vmkernel'
-    # vmx = 'D:\\vmware\\test\\patched\\vmx'
-    # vmx_debug = 'D:\\vmware\\test\\patched\\vmx-debug'
-    # vmx_stats = 'D:\\vmware\\test\\patched\\vmx-stats'
-    # vmwarebase = ''
-    # libvmkctl = 'D:\\vmware\\test\\patched\\libvmkctl.so'
-
     # Patch the vmx executables skipping stats version for Player
-    patchsmc(vmx, osname)
-    patchsmc(vmx_debug, osname)
+    patchsmc(vmx, osname, vmx_so)
+    patchsmc(vmx_debug, osname, vmx_so)
     try:
-        patchsmc(vmx_stats, osname)
+        patchsmc(vmx_stats, osname, vmx_so)
     except IOError:
         pass
 
