@@ -198,7 +198,7 @@ def patchkeys(f, vmx, key, osname):
         i += 1
     return smc_old_memptr, smc_new_memptr
 
-def patchsmc(name, osname, so):
+def patchsmc(name, osname, sharedobj):
     with open(name, 'r+b') as f:
 
         # Read file into string variable
@@ -260,7 +260,7 @@ def patchsmc(name, osname, so):
 
         # Find matching RELA record in .rela.dyn in ESXi ELF files
         # This is temporary code until proper ELF parsing written
-        if so == True:
+        if sharedobj:
             print 'Modifying RELA records from: ' + hex(smc_old_memptr) + ' to ' + hex(smc_new_memptr)
             patchELF(f, smc_old_memptr, smc_new_memptr)
 

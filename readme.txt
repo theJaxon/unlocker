@@ -10,9 +10,9 @@ If you are using an earlier product please continue using Unlocker 1
 
 Version 2 has been tested against:
 
-* Workstation 11 on Windows and Linux
-* Player 7 on Windows and Linux
-* Fusion 7 on Mavericks and Yosemite
+* Workstation 11/12 on Windows and Linux
+* Player 7 & Workstation Player 12 on Windows and Linux
+* Fusion 7/8 on Mavericks and Yosemite
 * ESXi 6.0
 
 The patch code carries out the following modifications dependent on the product
@@ -56,7 +56,7 @@ Latest Linux and ESXi products are OK and do not show this problem.
 | IMPORTANT:                                                                  |
 | ==========                                                                  |
 |                                                                             |
-| If you create a new VM using version 11 hardware VMware will stop and       |
+| If you create a new VM using version 11 or 12 hardware VMware will stop and |
 | create a core dump.There are two options to work around this issue:         |
 |                                                                             |
 | 1. Change the VM to be HW 10 - this does not affect performance.            |
@@ -156,6 +156,7 @@ History
 18/06/15 2.0.5 - ESXi 6 working
                - Latest tools from Fusion 7.1.2
 20/06/15 2.0.6 - ESXi 6 patch for smcPresent vCenter compatibility
+16/09/15 2.0.7 - Workstation 12 on Linux fixes
 
 
 (c) 2011-2015 Dave Parsons
