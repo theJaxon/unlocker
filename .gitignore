@@ -1,4 +1,5 @@
 backup/
+tools/
 .idea/
 unlocker/build
 unlocker/dist
