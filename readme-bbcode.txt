@@ -9,8 +9,8 @@ If you are using an earlier product please continue using Unlocker 1
 
 Version 2 has been tested against:
 [LIST]
-[*]Workstation 11/12 on Windows and Linux[/*]
-[*]Player 7 & Workstation Player 12 on Windows and Linux[/*]
+[*]Workstation 11/12 Pro on Windows and Linux[/*]
+[*]Player 7 & Workstation Player 12Â on Windows and Linux[/*]
 [*]Fusion 7/8 on Mavericks and Yosemite[/*]
 [*]ESXi 6.0[/*]
 [/LIST]
@@ -22,7 +22,6 @@ being patched:
 [*]Fix libvmkctl.so on ESXi 6 to allow use with vCenter[/*]
 [*]A copy of the latest VMware Tools for OS X is included[/*]
 [/LIST]
-
 Note that not all products recognise the darwin.iso via install tools menu item.
 You will have to manually mount the darwin.iso for example on Workstation and Player.
 
@@ -50,16 +49,16 @@ If you are using VMware Player or Workstation on Windows you may get a core dump
 
 Latest Linux and ESXi products are OK and do not show this problem.
 
-[color=#ff0000][u][b] IMPORTANT:[/b][/u]
+[color=#ff0000][u][b]Â IMPORTANT:[/b][/u]
 
- If you create a new VM using version 11 hardware VMware will stop and 
- create a core dump.There are two options to work around this issue:
+Â If you create a new VM using version 11 hardware VMware will stop andÂ 
+Â create a core dump.There are two options to work around this issue:
 
- 1. Change the VM to be HW 10 - this does not affect performance.
- 2. Edit the VMX file and add: [/color]
- 
-[code=auto:0] smc.version = "0" |[/code]
- 
+Â 1. Change the VM to be HW 10 - this does not affect performance.
+Â 2. Edit the VMX file and add:Â [/color]
+Â 
+[code=auto:0]Â smc.version = "0" |[/code]
+Â 
 
 To remove the check for server versions for OS X Leopard and Snow Leopard
 (10.5 and 10.6) you must use a replacement EFI firwmare module from the firmware
@@ -69,16 +68,16 @@ If you are using a 32-bit installation of OS X:
 
 1. Copy efi32-srvr.rom to guest folder.
 2. Edit the vmx file and add:
- 
+Â 
 [code=auto:0]efi32.filename = "efi32-srvr.rom"[/code]
- 
+Â 
 If you are using a 64-bit installation of OS X:
 
 1. Copy efi64-srvr.rom to guest folder.
 2. Edit the vmx file and add:
- 
+Â 
 [code=auto:0]efi64.filename = "efi64-srvr.rom"[/code]
- 
+Â 
 [u]4. Windows[/u]
 
 On Windows you will need to either run cmd.exe as Administrator or using
@@ -177,5 +176,10 @@ debugging expertise. Sam also wrote the code for patching ESXi ELF files.
 16/09/15 2.0.7
 [LIST]
 [*]Workstation 12 on Linux fixes[/*]
+[/LIST]
+[/LIST]
+16/09/15 2.0.8
+[LIST]
+[*]Player 12 on Linux fixes[/*]
 [/LIST]
 (c) 2011-2015 Dave Parsons

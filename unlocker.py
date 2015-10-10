@@ -50,10 +50,10 @@ if sys.version_info < (2, 7):
     sys.exit(1)
 
 # Setup imports depending on whether IronPython or CPython
-if sys.platform == 'win32' \
-        or sys.platform == 'cli':
-    from _winreg import *
-
+try:
+    import _winreg
+except ImportError:
+    pass
 
 def rot13(s):
     chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz'
@@ -67,17 +67,19 @@ def bytetohex(bytestr):
 
 
 def printkey(i, offset, smc_key, smc_data):
-    print str(i+1).zfill(3) \
-        + ' ' + hex(offset) \
-        + ' ' + smc_key[0][::-1] \
-        + ' ' + str(smc_key[1]).zfill(2) \
-        + ' ' + smc_key[2][::-1].replace('\x00', ' ') \
-        + ' ' + '{0:#0{1}x}'.format(smc_key[3], 4) \
-        + ' ' + hex(smc_key[4]) \
-        + ' ' + bytetohex(smc_data)
+    print str(i + 1).zfill(3) \
+          + ' ' + hex(offset) \
+          + ' ' + smc_key[0][::-1] \
+          + ' ' + str(smc_key[1]).zfill(2) \
+          + ' ' + smc_key[2][::-1].replace('\x00', ' ') \
+          + ' ' + '{0:#0{1}x}'.format(smc_key[3], 4) \
+          + ' ' + hex(smc_key[4]) \
+          + ' ' + bytetohex(smc_data)
 
-E_CLASS64 = 2;
-E_SHT_RELA = 4;
+
+E_CLASS64 = 2
+E_SHT_RELA = 4
+
 
 def patchELF(f, oldOffset, newOffset):
     f.seek(0)
@@ -87,7 +89,7 @@ def patchELF(f, oldOffset, newOffset):
 
     ei_class = struct.unpack('=B', f.read(1))[0]
     if ei_class != E_CLASS64:
-	raise Exception('Not 64bit elf header: ' + ei_class)
+        raise Exception('Not 64bit elf header: ' + ei_class)
 
     f.seek(40)
     e_shoff = struct.unpack('=Q', f.read(8))[0]
@@ -96,7 +98,7 @@ def patchELF(f, oldOffset, newOffset):
     e_shnum = struct.unpack('=H', f.read(2))[0]
     e_shstrndx = struct.unpack('=H', f.read(2))[0]
 
-    #print 'e_shoff: 0x{:x} e_shentsize: 0x{:x} e_shnum:0x{:x} e_shstrndx:0x{:x}'.format(e_shoff, e_shentsize, e_shnum, e_shstrndx)
+    # print 'e_shoff: 0x{:x} e_shentsize: 0x{:x} e_shnum:0x{:x} e_shstrndx:0x{:x}'.format(e_shoff, e_shentsize, e_shnum, e_shstrndx)
 
     for i in range(0, e_shnum):
         f.seek(e_shoff + i * e_shentsize)
@@ -108,7 +110,7 @@ def patchELF(f, oldOffset, newOffset):
         e_sh_entsize = e_sh[9]
         if e_sh_type == E_SHT_RELA:
             e_sh_nument = e_sh_size / e_sh_entsize
-            #print 'RELA at 0x{:x} with {:d} entries'.format(e_sh_offset, e_sh_nument)
+            # print 'RELA at 0x{:x} with {:d} entries'.format(e_sh_offset, e_sh_nument)
             for j in range(0, e_sh_nument):
                 f.seek(e_sh_offset + e_sh_entsize * j)
                 rela = struct.unpack('=QQq', f.read(e_sh_entsize))
@@ -116,7 +118,7 @@ def patchELF(f, oldOffset, newOffset):
                 r_info = rela[1]
                 r_addend = rela[2]
                 if r_addend == oldOffset:
-                    r_addend = newOffset;
+                    r_addend = newOffset
                     f.seek(e_sh_offset + e_sh_entsize * j)
                     f.write(struct.pack('=QQq', r_offset, r_info, r_addend))
                     print 'Relocation modified at: ' + hex(e_sh_offset + e_sh_entsize * j)
@@ -125,6 +127,8 @@ def patchELF(f, oldOffset, newOffset):
 def patchkeys(f, vmx, key, osname):
     # Setup struct pack string
     key_pack = '=4sB4sB6xQ'
+    smc_old_memptr = 0
+    smc_new_memptr = 0
 
     # Do Until OSK1 read
     i = 0
@@ -198,8 +202,12 @@ def patchkeys(f, vmx, key, osname):
         i += 1
     return smc_old_memptr, smc_new_memptr
 
+
 def patchsmc(name, osname, sharedobj):
     with open(name, 'r+b') as f:
+
+        smc_old_memptr = 0
+        smc_new_memptr = 0
 
         # Read file into string variable
         vmx = f.read()
@@ -326,8 +334,8 @@ def patchvmkctl(name):
     f.close()
     print 'smcPresent Patched: ' + name
 
-def main():
 
+def main():
     # Work around absent Platform module on VMkernel
     if os.name == 'nt' or os.name == 'cli':
         osname = 'windows'
@@ -343,18 +351,20 @@ def main():
         vmx_debug = vmx_path + 'vmware-vmx-debug'
         vmx_stats = vmx_path + 'vmware-vmx-stats'
         vmwarebase = ''
+        libvmkctl = ''
 
     elif osname == 'linux':
         vmx_path = '/usr/lib/vmware/bin/'
         vmx = vmx_path + 'vmware-vmx'
         vmx_debug = vmx_path + 'vmware-vmx-debug'
         vmx_stats = vmx_path + 'vmware-vmx-stats'
-        vmx_version = subprocess.check_output(["vmware", "-v"])
-        if vmx_version.startswith('VMware Workstation 12'):
+        vmx_version = subprocess.check_output(["vmplayer", "-v"])
+        if vmx_version.startswith('VMware Player 12'):
             vmx_so = True
             vmwarebase = '/usr/lib/vmware/lib/libvmwarebase.so/libvmwarebase.so'
         else:
             vmwarebase = '/usr/lib/vmware/lib/libvmwarebase.so.0/libvmwarebase.so.0'
+        libvmkctl = ''
 
     elif osname == 'vmkernel':
         vmx_path = '/unlocker/'
@@ -374,6 +384,7 @@ def main():
         vmx_debug = vmx_path + 'vmware-vmx-debug.exe'
         vmx_stats = vmx_path + 'vmware-vmx-stats.exe'
         vmwarebase = vmwarebase_path + 'vmwarebase.dll'
+        libvmkctl = ''
 
     else:
         print('Unknown Operating System: ' + osname)

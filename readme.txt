@@ -157,6 +157,6 @@ History
                - Latest tools from Fusion 7.1.2
 20/06/15 2.0.6 - ESXi 6 patch for smcPresent vCenter compatibility
 16/09/15 2.0.7 - Workstation 12 on Linux fixes
-
+19/09/15 2.0.8 - Player 12 on Linux fixes
 
 (c) 2011-2015 Dave Parsons

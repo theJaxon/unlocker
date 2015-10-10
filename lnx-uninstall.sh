@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo VMware Unlocker 2.0.7
+echo VMware Unlocker 2.0.8
 echo ===============================
 echo Copyright: Dave Parsons 2011-15
 
