@@ -81,7 +81,7 @@ def main():
     parser.clean()
 
     # Download the darwin.iso tgz file
-    urllib.urlretrieve(url, 'tools/com.vmware.fusion.tools.darwin.zip.tar')
+    urllib.urlretrieve(url, convertPath(dir + '/tools/com.vmware.fusion.tools.darwin.zip.tar'))
 
     # Extract the tar to zip
     tar = tarfile.open(convertPath(dir + '/tools/com.vmware.fusion.tools.darwin.zip.tar'), 'r')
