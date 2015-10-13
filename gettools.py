@@ -23,6 +23,7 @@ THE SOFTWARE.
 """
 
 import os
+import sys
 import urllib
 import urllib2
 from HTMLParser import HTMLParser
@@ -55,6 +56,12 @@ def convertPath(path):
 
 
 def main():
+
+    # Check minimal Python version is 2.7
+    if sys.version_info < (2, 7):
+        sys.stderr.write('You need Python 2.7 or later\n')
+        sys.exit(1)
+
     # Setup url and file paths
     url = 'http://softwareupdate.vmware.com/cds/vmw-desktop/fusion/'
     dir = os.path.dirname(os.path.abspath(__file__))

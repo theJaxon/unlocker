@@ -59,25 +59,6 @@ Latest Linux and ESXi products are OK and do not show this problem.
  
 [code=auto:0] smc.version = "0" |[/code]
  
-
-To remove the check for server versions for OS X Leopard and Snow Leopard
-(10.5 and 10.6) you must use a replacement EFI firwmare module from the firmware
-folder.
-
-If you are using a 32-bit installation of OS X:
-
-1. Copy efi32-srvr.rom to guest folder.
-2. Edit the vmx file and add:
- 
-[code=auto:0]efi32.filename = "efi32-srvr.rom"[/code]
- 
-If you are using a 64-bit installation of OS X:
-
-1. Copy efi64-srvr.rom to guest folder.
-2. Edit the vmx file and add:
- 
-[code=auto:0]efi64.filename = "efi64-srvr.rom"[/code]
- 
 [u]4. Windows[/u]
 
 On Windows you will need to either run cmd.exe as Administrator or using
