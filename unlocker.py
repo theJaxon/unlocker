@@ -50,10 +50,10 @@ if sys.version_info < (2, 7):
     sys.exit(1)
 
 # Setup imports depending on whether IronPython or CPython
-try:
-    import _winreg
-except ImportError:
-    pass
+if sys.platform == 'win32' \
+        or sys.platform == 'cli':
+    from _winreg import *
+
 
 def rot13(s):
     chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz'

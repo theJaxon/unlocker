@@ -88,16 +88,19 @@ def main():
     parser.clean()
 
     # Download the darwin.iso tgz file
+    print 'Retrieving tools from: ' + url
     urllib.urlretrieve(url, convertPath(dir + '/tools/com.vmware.fusion.tools.darwin.zip.tar'))
 
     # Extract the tar to zip
     tar = tarfile.open(convertPath(dir + '/tools/com.vmware.fusion.tools.darwin.zip.tar'), 'r')
     tar.extract('com.vmware.fusion.tools.darwin.zip', path=convertPath(dir + '/tools/'))
+    tar.close()
 
     # Extract the iso and sig files from zip
     zip = zipfile.ZipFile(convertPath(dir + '/tools/com.vmware.fusion.tools.darwin.zip'), 'r')
     zip.extract('payload/darwin.iso', path=convertPath(dir + '/tools/'))
     zip.extract('payload/darwin.iso.sig', path=convertPath(dir + '/tools/'))
+    zip.close()
 
     # Move the iso and sig files to tools folder
     shutil.move(convertPath(dir + '/tools/payload/darwin.iso'), convertPath(dir + '/tools/darwin.iso'))
