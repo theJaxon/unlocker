@@ -106,7 +106,7 @@ def main():
     shutil.move(convertPath(dir + '/tools/payload/darwin.iso'), convertPath(dir + '/tools/darwin.iso'))
     shutil.move(convertPath(dir + '/tools/payload/darwin.iso.sig'), convertPath(dir + '/tools/darwin.iso.sig'))
 
-    # Cleanup workiong files and folders
+    # Cleanup working files and folders
     shutil.rmtree(convertPath(dir + '/tools/payload'), True)
     os.remove(convertPath(dir + '/tools/com.vmware.fusion.tools.darwin.zip.tar'))
     os.remove(convertPath(dir + '/tools/com.vmware.fusion.tools.darwin.zip'))

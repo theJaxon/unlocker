@@ -1,6 +1,6 @@
 @echo off
 setlocal ENABLEEXTENSIONS
-echo VMware Unlocker 2.0.7
+echo VMware Unlocker 2.0.8
 echo ========================
 echo (c) Dave Parsons 2011-15
 
@@ -35,6 +35,7 @@ del /f "%InstallPath%"darwin.*
 
 echo Removing backup files...
 rd /s /q .\backup > NUL 2>&1
+rd /s /q .\tools > NUL 2>&1
 
 echo Starting VMware services...
 net start VMUSBArbService > NUL 2>&1
