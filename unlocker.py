@@ -400,6 +400,7 @@ def main():
 
     # Patch vmwarebase for Workstation and Player
     # Not required on Fusion or ESXi as table already has correct flags
+    print('DEBUG: vmwarebase path:' + vmwarebase)
     if vmwarebase != '':
         patchbase(vmwarebase)
     else:
