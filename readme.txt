@@ -21,10 +21,10 @@ being patched:
 * Fix vmware-vmx and derivatives to allow Mac OS X to boot
 * Fix vmwarebase .dll or .so to allow Apple to be selected during VM creation
 * Fix libvmkctl.so on ESXi 6 to allow use with vCenter
-* A copy of the latest VMware Tools for OS X is included
+* Download a copy of the latest VMware Tools for OS X
 
 Note that not all products recognise the darwin.iso via install tools menu item.
-You will have to manually mount the darwin.iso for example on Workstation and Player.
+You will have to manually mount the darwin.iso for example on Workstation 11 and Player 7.
 
 The vmwarebase code does not need to be patched on OS X or ESXi so you will see a
 message on those systems telling you that it will not be patched.
@@ -56,8 +56,8 @@ Latest Linux and ESXi products are OK and do not show this problem.
 | IMPORTANT:                                                                  |
 | ==========                                                                  |
 |                                                                             |
-| If you create a new VM using version 11 or 12 hardware VMware will stop and |
-| create a core dump.There are two options to work around this issue:         |
+| If you create a new VM using version 11 or 12 hardware VMware may stop and  |
+| create a core dump. There are two options to work around this issue:        |
 |                                                                             |
 | 1. Change the VM to be HW 10 - this does not affect performance.            |
 | 2. Edit the VMX file and add:                                               |
@@ -72,6 +72,7 @@ Explorer right click on the command file and select "Run as administrator".
 
 win-install.cmd   - patches VMware
 win-uninstall.cmd - restores VMware
+win-update-tools.cmd - retrieves latest OS X guest tools
 
 5. Linux
 ---------
@@ -82,6 +83,7 @@ by running chmod +x against the 2 files.
 
 lnx-install.sh   - patches VMware
 lnx-uninstall.sh - restores VMware
+lnx-update-tools.cmd - retrieves latest OS X guest tools
 
 6. Mac OS X
 -----------
@@ -141,6 +143,9 @@ History
                - Latest tools from Fusion 7.1.2
 20/06/15 2.0.6 - ESXi 6 patch for smcPresent vCenter compatibility
 16/09/15 2.0.7 - Workstation 12 on Linux fixes
-19/09/15 2.0.8 - Player 12 on Linux fixes
+14/11/15 2.0.8 - Player 12 on Linux fixes
+               - Get latest VMware tools command
+               - Removed firmware files
+               - Moved to PyInstaller 3.0
 
 (c) 2011-2015 Dave Parsons

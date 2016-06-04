@@ -5,3 +5,5 @@ unlocker/build
 unlocker/dist
 dumpsmc/build
 dumpsmc/dist
+gettools/build
+gettools/dist

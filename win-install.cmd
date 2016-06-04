@@ -1,6 +1,6 @@
 @echo off
 setlocal ENABLEEXTENSIONS
-echo VMware Unlocker 2.0.7
+echo VMware Unlocker 2.0.8
 echo ========================
 echo (c) Dave Parsons 2011-15
 
@@ -36,6 +36,8 @@ xcopy /F /Y "%InstallPath%vmwarebase.dll" .\backup\
 echo Patching...
 unlocker.exe
 
+echo Getting VMware Tools...
+gettools.exe
 xcopy /F /Y .\tools\darwin.* "%InstallPath%"
 
 echo Starting VMware services...
