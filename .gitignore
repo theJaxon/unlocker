@@ -1,9 +1,4 @@
 backup/
 tools/
 .idea/
-unlocker/build
-unlocker/dist
-dumpsmc/build
-dumpsmc/dist
-gettools/build
-gettools/dist
+pyinstaller/

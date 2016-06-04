@@ -1,19 +1,48 @@
+"""
+The MIT License (MIT)
+
+Copyright (c) 2016 Dave Parsons
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the 'Software'), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"""
+
 import json
 import random
 import string
+import sys
 
 # Years and months
 #         2010    2011    2012    2013    2014    2015    2016    2017    2018    2019    2020    2021    2022
-years = ['C','D','F','G','H','J','K','L','M','N','P','Q','R','T','V','W','X','Y','1','2','3','4','5','6','7','8']
+years = ['C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'T', 'V', 'W', 'X', 'Y', '1', '2', '3', '4',
+         '5', '6', '7', '8']
 
 # Week numbers from 1-52
 # B is used to shift indexing to 1 and is not used
-weeks = ['B','C','D','F','G','H','J','K','L','M','N','P','Q','R','T','V','W','X','Y','1','2','3','4','5','6','7','8',
-         'C','D','F','G','H','J','K','L','M','N','P','Q','R','T','V','W','X','Y','1','2','3','4','5','6','7','8']
+weeks = ['B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'T', 'V', 'W', 'X', 'Y', '1', '2', '3',
+         '4', '5', '6', '7', '8',
+         'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'T', 'V', 'W', 'X', 'Y', '1', '2', '3', '4',
+         '5', '6', '7', '8']
 
 # Values to generate 3 code production number
-production = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
-              '0','1','2','3','4','5','6','7','8','9']
+production = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+              'V', 'W', 'X', 'Y', 'Z',
+              '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
 # MLB codes
 ttt = ['200', '600', '403', '404', '405', '303', '108', '207', '609', '501', '306', '102', '701', '301', '501',
@@ -26,14 +55,14 @@ eeee = ['DYWF', 'F117', 'F502', 'F505', 'F9GY', 'F9H0', 'F9H1', 'F9H2', 'DYWD', 
         'FF4L', 'FF4M', 'FF4N', 'FF4P', 'DNY3', 'DP00', 'DJWK', 'DM66', 'DNJK', 'DKG1', 'DM65', 'DNJJ', 'DKG2',
         'DM67', 'DNJL', 'DJWM', 'DMT3', 'DMT5', 'DJWN', 'DM69', 'DJWP', 'DM6C']
 
-kk = ['1H', '1M' 'AD' '1F' 'A8' 'UE' 'JA' 'JC' '8C' 'CB' 'FB']
+kk = ['1H', '1M', 'AD', '1F', 'A8', 'UE', 'JA', 'JC', '8C', 'CB', 'FB']
 
 # Loaded JSON model database
 smbiosdb = {}
 
 model = None
-year = None
-week = None
+year = 2010
+week = 1
 yearweek = None
 run = None
 mlb = None
@@ -51,10 +80,10 @@ def getmlb():
     global mlb
 
     if model['serial.type'] == 11:
-        mlb = yearweek + '0'+ run + id_generator(4)
+        mlb = yearweek + '0' + run + id_generator(4)
     elif model['serial.type'] == 12:
-        mlb = 'C02{0}{1}{2}{3}{4}{5}'.format(str(year - 2010), str(week).zfill(2),
-                    random.choice(ttt), random.choice(cc), random.choice(eeee), random.choice(kk))
+        mlb = 'C02{0}{1}{2}{3}{4}{5}'.format(str(year - 2010), str(week).zfill(2), random.choice(ttt),
+                                             random.choice(cc), random.choice(eeee), random.choice(kk))
     else:
         pass
 
@@ -69,14 +98,17 @@ def getmodel():
     while True:
         try:
             index = int(raw_input('Please enter model family [1-6]: '))
-        except:
+        except KeyboardInterrupt:
+            print "Goodbye!"
+            sys.exit(0)
+        except ValueError:
             print "This is not a number."
         else:
             if (index >= 1) and (index <= 6):
                 modeltype = modeltypes[index - 1]
                 break
             else:
-                print 'Invalid model family selected: ',  index
+                print 'Invalid model family selected: ', index
 
     # Now build a menu with selected models
     i = 1
@@ -90,10 +122,13 @@ def getmodel():
     while True:
         try:
             index = int(raw_input('Please enter model [1-{}]: '.format(i - 1)))
-        except:
+        except KeyboardInterrupt:
+            print "Goodbye!"
+            sys.exit(0)
+        except ValueError:
             print "This is not a number."
         else:
-            if (index >= 1) and (index <= (i-1)):
+            if (index >= 1) and (index <= (i - 1)):
                 model = models[index - 1]
                 break
             else:
@@ -136,14 +171,17 @@ def getweek():
     # Get a week number
     while True:
         try:
-            week = int(input('Please enter week for year {0} (1 - 53): '.format(year)))
-        except:
+            week = int(input('Please enter week for year {0} (1 - 52): '.format(year)))
+        except KeyboardInterrupt:
+            print "Goodbye!"
+            sys.exit(0)
+        except ValueError:
             print "This is not a week number."
         else:
-            if (week >= 1) and (week <= 53):
+            if (week >= 1) and (week <= 52):
                 break
             else:
-                print 'Invalid week: ',  week
+                print 'Invalid week: ', week
 
     # Format date based on serial number length
     if serlen == 11:
@@ -169,6 +207,7 @@ def main():
     getweek()
     getrun()
     getmlb()
+    getrom()
     print
     print '# Passthru host definitions - FALSE'
     print 'board-id.reflectHost = "FALSE"'
