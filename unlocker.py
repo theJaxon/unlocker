@@ -40,6 +40,7 @@ Offset  Length  struct Type Description
 0x18/24 0x30/48 48B    byte Data
 """
 
+import codecs
 import os
 import sys
 import struct
@@ -53,13 +54,6 @@ if sys.version_info < (2, 7):
 if sys.platform == 'win32' \
         or sys.platform == 'cli':
     from _winreg import *
-
-
-def rot13(s):
-    chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz'
-    trans = chars[26:] + chars[:26]
-    rot_char = lambda c: trans[chars.find(c)] if chars.find(c) > -1 else c
-    return ''.join(rot_char(c) for c in s)
 
 
 def bytetohex(bytestr):
@@ -81,7 +75,7 @@ E_CLASS64 = 2
 E_SHT_RELA = 4
 
 
-def patchELF(f, oldOffset, newOffset):
+def patchelf(f, oldoffset, newoffset):
     f.seek(0)
     magic = f.read(4)
     if not magic == b'\x7fELF':
@@ -98,33 +92,34 @@ def patchELF(f, oldOffset, newOffset):
     e_shnum = struct.unpack('=H', f.read(2))[0]
     e_shstrndx = struct.unpack('=H', f.read(2))[0]
 
-    # print 'e_shoff: 0x{:x} e_shentsize: 0x{:x} e_shnum:0x{:x} e_shstrndx:0x{:x}'.format(e_shoff, e_shentsize, e_shnum, e_shstrndx)
+    print 'e_shoff: 0x{:x} e_shentsize: 0x{:x} e_shnum:0x{:x} e_shstrndx:0x{:x}'.format(e_shoff, e_shentsize,
+                                                                                        e_shnum, e_shstrndx)
 
     for i in range(0, e_shnum):
         f.seek(e_shoff + i * e_shentsize)
         e_sh = struct.unpack('=LLQQQQLLQQ', f.read(e_shentsize))
-        e_sh_name = e_sh[0]
+        # e_sh_name = e_sh[0]
         e_sh_type = e_sh[1]
         e_sh_offset = e_sh[4]
         e_sh_size = e_sh[5]
         e_sh_entsize = e_sh[9]
         if e_sh_type == E_SHT_RELA:
             e_sh_nument = e_sh_size / e_sh_entsize
-            # print 'RELA at 0x{:x} with {:d} entries'.format(e_sh_offset, e_sh_nument)
+            print 'RELA at 0x{:x} with {:d} entries'.format(e_sh_offset, e_sh_nument)
             for j in range(0, e_sh_nument):
                 f.seek(e_sh_offset + e_sh_entsize * j)
                 rela = struct.unpack('=QQq', f.read(e_sh_entsize))
                 r_offset = rela[0]
                 r_info = rela[1]
                 r_addend = rela[2]
-                if r_addend == oldOffset:
-                    r_addend = newOffset
+                if r_addend == oldoffset:
+                    r_addend = newoffset
                     f.seek(e_sh_offset + e_sh_entsize * j)
                     f.write(struct.pack('=QQq', r_offset, r_info, r_addend))
                     print 'Relocation modified at: ' + hex(e_sh_offset + e_sh_entsize * j)
 
 
-def patchkeys(f, vmx, key, osname):
+def patchkeys(f, key):
     # Setup struct pack string
     key_pack = '=4sB4sB6xQ'
     smc_old_memptr = 0
@@ -160,7 +155,7 @@ def patchkeys(f, vmx, key, osname):
 
             # Write new data for key
             f.seek(offset + 24)
-            smc_new_data = rot13('bheuneqjbexolgurfrjbeqfthneqrqcy')
+            smc_new_data = codecs.decode('bheuneqjbexolgurfrjbeqfthneqrqcy', 'rot_13')
             f.write(smc_new_data)
             f.flush()
 
@@ -182,7 +177,7 @@ def patchkeys(f, vmx, key, osname):
 
             # Write new data for key
             f.seek(offset + 24)
-            smc_new_data = rot13('rnfrqbagfgrny(p)NccyrPbzchgreVap')
+            smc_new_data = codecs.decode('rnfrqbagfgrny(p)NccyrPbzchgreVap', 'rot_13')
             f.write(smc_new_data)
             f.flush()
 
@@ -203,7 +198,7 @@ def patchkeys(f, vmx, key, osname):
     return smc_old_memptr, smc_new_memptr
 
 
-def patchsmc(name, osname, sharedobj):
+def patchsmc(name, sharedobj):
     with open(name, 'r+b') as f:
 
         smc_old_memptr = 0
@@ -244,10 +239,10 @@ def patchsmc(name, osname, sharedobj):
 
         if (smc_adr - smc_key0) != 72:
             print 'appleSMCTableV0 Table        : ' + hex(smc_key0)
-            smc_old_memptr, smc_new_memptr = patchkeys(f, vmx, smc_key0, osname)
+            smc_old_memptr, smc_new_memptr = patchkeys(f, smc_key0)
         elif (smc_adr - smc_key1) != 72:
             print 'appleSMCTableV0 Table        : ' + hex(smc_key1)
-            smc_old_memptr, smc_new_memptr = patchkeys(f, vmx, smc_key1, osname)
+            smc_old_memptr, smc_new_memptr = patchkeys(f, smc_key1)
 
         print
 
@@ -259,10 +254,10 @@ def patchsmc(name, osname, sharedobj):
 
         if (smc_adr - smc_key0) == 72:
             print 'appleSMCTableV1 Table        : ' + hex(smc_key0)
-            smc_old_memptr, smc_new_memptr = patchkeys(f, vmx, smc_key0, osname)
+            smc_old_memptr, smc_new_memptr = patchkeys(f, smc_key0)
         elif (smc_adr - smc_key1) == 72:
             print 'appleSMCTableV1 Table        : ' + hex(smc_key1)
-            smc_old_memptr, smc_new_memptr = patchkeys(f, vmx, smc_key1, osname)
+            smc_old_memptr, smc_new_memptr = patchkeys(f, smc_key1)
 
         print
 
@@ -270,7 +265,7 @@ def patchsmc(name, osname, sharedobj):
         # This is temporary code until proper ELF parsing written
         if sharedobj:
             print 'Modifying RELA records from: ' + hex(smc_old_memptr) + ' to ' + hex(smc_new_memptr)
-            patchELF(f, smc_old_memptr, smc_new_memptr)
+            patchelf(f, smc_old_memptr, smc_new_memptr)
 
         # Tidy up
         f.flush()
@@ -391,10 +386,10 @@ def main():
         return
 
     # Patch the vmx executables skipping stats version for Player
-    patchsmc(vmx, osname, vmx_so)
-    patchsmc(vmx_debug, osname, vmx_so)
+    patchsmc(vmx, vmx_so)
+    patchsmc(vmx_debug, vmx_so)
     try:
-        patchsmc(vmx_stats, osname, vmx_so)
+        patchsmc(vmx_stats, vmx_so)
     except IOError:
         pass
 

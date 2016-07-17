@@ -562,5 +562,17 @@
     "y2": 2008,
     "y3": null,
     "y4": null
+  },
+   {
+    "family": "MacBook",
+    "hw.model": "MacBook9,1",
+    "board-id": "Mac-9AE82516C7C6B903",
+    "serial.type": 12,
+    "eee.code": "GTHV",
+    "bios.version": "MB91.88Z.0154.B00.1603041656",
+    "y1": 2016,
+    "y2": null,
+    "y3": null,
+    "y4": null
   }
 ]
