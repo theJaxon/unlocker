@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
 
-echo VMware Get OS X Tools 2.0.8
+echo VMware Get OS X Tools 2.0.9
 echo ===============================
-echo Copyright: Dave Parsons 2011-15
+echo Copyright: Dave Parsons 2015-16
 
 # Ensure we only use unmodified commands
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin

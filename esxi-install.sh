@@ -1,9 +1,9 @@
 #!/bin/sh
 set -e
 
-echo VMware Unlocker 2.0.8
+echo VMware Unlocker 2.0.9
 echo ===============================
-echo Copyright: Dave Parsons 2011-15
+echo Copyright: Dave Parsons 2011-16
 
 # Ensure we only use unmodified commands
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin
