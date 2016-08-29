@@ -368,7 +368,8 @@ def main():
         vmx_stats = vmx_path + 'vmx-stats'
         vmx_so = True
         vmwarebase = ''
-        libvmkctl = vmx_path + 'libvmkctl.so'
+        libvmkctl32 = vmx_path + 'lib/libvmkctl.so'
+        libvmkctl64 = vmx_path + 'lib64/libvmkctl.so'
 
     elif osname == 'windows':
         reg = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
@@ -402,7 +403,14 @@ def main():
         print 'Patching vmwarebase is not required on this system'
 
     if osname == 'vmkernel':
-        patchvmkctl(libvmkctl)
+        # Patch ESXi 6.0 and 6.5 32 bit .so
+        patchvmkctl(libvmkctl32)
+
+        # Try and patch ESXi 6.5 64 bit .so
+        try:
+            patchvmkctl(libvmkctl64)
+        except IOError:
+            pass
 
 
 if __name__ == '__main__':
