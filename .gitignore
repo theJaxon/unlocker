@@ -2,3 +2,6 @@ backup/
 tools/
 .idea/
 pyinstaller/
+samples/
+tests/
+

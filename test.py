@@ -40,19 +40,18 @@ Offset  Length  struct Type Description
 0x18/24 0x30/48 48B    byte Data
 """
 
+import argparse
 import codecs
 import os
 import sys
 import struct
-import subprocess
 
 if sys.version_info < (2, 7):
     sys.stderr.write('You need Python 2.7 or later\n')
     sys.exit(1)
 
 # Setup imports depending on whether IronPython or CPython
-if sys.platform == 'win32' \
-        or sys.platform == 'cli':
+if sys.platform == 'win32' or sys.platform == 'cli':
     from _winreg import *
 
 
@@ -115,7 +114,7 @@ def patchelf(f, oldoffset, newoffset):
                     f.seek(e_sh_offset + e_sh_entsize * j)
                     f.write(struct.pack('=QQq', r_offset, r_info, r_addend))
                     print 'Relocation modified at: ' + hex(e_sh_offset + e_sh_entsize * j)
-
+    print
 
 def patchkeys(f, key):
     # Setup struct pack string
@@ -270,8 +269,9 @@ def patchsmc(name, sharedobj):
         f.close()
 
 
-def patchbase(name):
-    # Patch file
+def patchgos(name):
+    # Patch vmwarebase for Workstation and Player
+    # Not required on Fusion or ESXi as table already has correct flags
     print 'GOS Patching: ' + name
     f = open(name, 'r+b')
 
@@ -329,80 +329,139 @@ def patchvmkctl(name):
 
 
 def main():
+
+    # Parse input arguments
+    parser = argparse.ArgumentParser()
+    osnames = ['darwin', 'linux', 'vmkernel', 'windows']
+    parser.add_argument('-v', '--vmx', help='vmx file', dest='vmx', action='store', type=str)
+    parser.add_argument('-d', '--vmx-debug', help='vmx-debug file', dest='vmx_debug', action='store', type=str)
+    parser.add_argument('-s', '--vmx-stats', help='vmx-stats file', dest='vmx_stats', action='store', type=str)
+    parser.add_argument('-b', '--vmbase', help='vmwarebase file', dest='vmwarebase', action='store', type=str)
+    parser.add_argument('-k', '--vmkctl', help='vmkctl file', dest='vmkctl', action='store', type=str)
+    parser.add_argument('-o', '--osname', help='OS type', dest='ostype', action='store', choices=osnames)
+    args = parser.parse_args()
+
     # Work around absent Platform module on VMkernel
     if os.name == 'nt' or os.name == 'cli':
         osname = 'windows'
     else:
         osname = os.uname()[0].lower()
 
-    vmx_so = False
-
     # Setup default paths
-    if osname == 'darwin':
+    if len(sys.argv) > 1:
+
+        # Need to patch SO if vmkernel
+        if args.ostype == 'vmkernel':
+            elf = True
+        else:
+            elf = False
+
+        # Patch the vSMC tables
+        try:
+            if args.vmx != None:
+                patchsmc(args.vmx, elf)
+        except IOError:
+            pass
+        try:
+            if args.vmx_debug != None:
+                patchsmc(args.vmx_debug, elf)
+        except IOError:
+            pass
+        try:
+            if args.vmx_stats != None:
+                patchsmc(args.vmx_stats, elf)
+        except IOError:
+            pass
+
+        # Patch GOS tables
+        try:
+            if args.vmwarebase != None:
+                patchgos(args.vmwarebase, elf)
+        except IOError:
+            pass
+
+        # Patch vmkctl
+        try:
+            if args.vmkctl != None:
+                patchvmkctl(args.vmkctl)
+        except IOError:
+            pass
+
+    elif osname == 'darwin':
+        # Assumes default folder on macOS
         vmx_path = '/Applications/VMware Fusion.app/Contents/Library/'
-        vmx = vmx_path + 'vmware-vmx'
-        vmx_debug = vmx_path + 'vmware-vmx-debug'
-        vmx_stats = vmx_path + 'vmware-vmx-stats'
+
+        # Patch virtual SMC tables
+        patchsmc(vmx_path + 'vmware-vmx', False)
+        patchsmc(vmx_path + 'vmware-vmx-debug', False)
+        patchsmc(vmx_path + 'vmware-vmx-stats', False)
 
     elif osname == 'linux':
+        # Assumes default folder on Linux
         vmx_path = '/usr/lib/vmware/bin/'
-        vmx = vmx_path + 'vmware-vmx'
-        vmx_debug = vmx_path + 'vmware-vmx-debug'
-        vmx_stats = vmx_path + 'vmware-vmx-stats'
-        vmx_version = subprocess.check_output(["vmplayer", "-v"])
-        if vmx_version.startswith('VMware Player 12'):
-            vmx_so = True
-            vmwarebase = '/usr/lib/vmware/lib/libvmwarebase.so/libvmwarebase.so'
-        else:
-            vmwarebase = '/usr/lib/vmware/lib/libvmwarebase.so.0/libvmwarebase.so.0'
+
+        # Patch virtual SMC tables
+        patchsmc(vmx_path + 'vmware-vmx', False)
+        patchsmc(vmx_path + 'vmware-vmx-debug', False)
+        try:
+            patchsmc(vmx_path + 'vmware-vmx-stats', False)
+        except IOError:
+            pass
+
+        # Patch the GOS tables
+        # Try V11 patch path for vmwarebase
+        try:
+            patchgos('/usr/lib/vmware/lib/libvmwarebase.so.0/libvmwarebase.so.0', False)
+        except IOError:
+            pass
+
+        # Try V12 patch path for vmwarebase
+        try:
+            patchgos('/usr/lib/vmware/lib/libvmwarebase.so/libvmwarebase.so', False)
+        except IOError:
+            pass
 
     elif osname == 'vmkernel':
+        # Patch the copied files in the unlocker directory
         vmx_path = '/unlocker/'
-        vmx = vmx_path + 'vmx'
-        vmx_debug = vmx_path + 'vmx-debug'
-        vmx_stats = vmx_path + 'vmx-stats'
-        vmx_so = True
-        libvmkctl32 = vmx_path + 'lib/libvmkctl.so'
-        libvmkctl64 = vmx_path + 'lib64/libvmkctl.so'
+
+        # Patch virtual SMC tables
+        patchsmc(vmx_path + 'vmware-vmx', True)
+        patchsmc(vmx_path + 'vmware-vmx-debug', True)
+        patchsmc(vmx_path + 'vmware-vmx-stats', True)
+
+        # Patch smcPresent flag
+        # ESXi 6.0 and 6.5 32 bit .so
+        patchvmkctl(vmx_path + 'lib/libvmkctl.so')
+
+        # Patch ESXi 6.5 64 bit .so
+        try:
+            patchvmkctl(vmx_path + 'lib64/libvmkctl.so')
+        except IOError:
+            pass
 
     elif osname == 'windows':
+        # Find the path for VMware on Windows
+        # Find using Player reg settings as present for Player & Workstation
         reg = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
-        key = OpenKey(reg, r'SOFTWARE\Wow6432Node\VMware, Inc.\VMware Workstation')
+        key = OpenKey(reg, r'SOFTWARE\Wow6432Node\VMware, Inc.\VMware Player')
         vmwarebase_path = QueryValueEx(key, 'InstallPath')[0]
         vmx_path = QueryValueEx(key, 'InstallPath64')[0]
-        vmx = vmx_path + 'vmware-vmx.exe'
-        vmx_debug = vmx_path + 'vmware-vmx-debug.exe'
-        vmx_stats = vmx_path + 'vmware-vmx-stats.exe'
-        vmwarebase = vmwarebase_path + 'vmwarebase.dll'
+
+        # Patch virtual SMC tables
+        patchsmc(vmx_path + 'vmware-vmx.exe', False)
+        patchsmc(vmx_path + 'vmware-vmx-debug.exe', False)
+        try:
+            patchsmc(vmx_path + 'vmware-vmx-stats.exe', False)
+        except IOError:
+            pass
+
+        # Patch the GOS tables
+        patchgos(vmwarebase_path + 'vmwarebase.dll')
 
     else:
         print('Unknown Operating System: ' + osname)
         return
-
-    # Patch the vmx executables skipping stats version for Player
-    patchsmc(vmx, vmx_so)
-    patchsmc(vmx_debug, vmx_so)
-    try:
-        patchsmc(vmx_stats, vmx_so)
-    except IOError:
-        pass
-
-    # Patch vmwarebase for Workstation and Player
-    # Not required on Fusion or ESXi as table already has correct flags
-    if vmwarebase != '':
-        patchbase(vmwarebase)
-    else:
-        print 'Patching vmwarebase is not required on this system'
-
-    if osname == 'vmkernel':
-        # Patch ESXi 6.0 and 6.5 32 bit .so
-        patchvmkctl(libvmkctl32)
-
-        # Try and patch ESXi 6.5 64 bit .so
-        try:
-            patchvmkctl(libvmkctl64)
-        except IOError:
-            pass
 
 
 if __name__ == '__main__':
