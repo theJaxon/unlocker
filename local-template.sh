@@ -18,9 +18,7 @@ fi
 # Create new RAM disk and map to /unlocker
 logger -t unlocker Creating RAM disk
 mkdir /unlocker
-mkdir /unlocker/lib
-mkdir /unlocker/lib64
-localcli system visorfs ramdisk add -m 100 -M 100 -n unlocker -p 0755 -t /unlocker
+localcli system visorfs ramdisk add -m 200 -M 200 -n unlocker -p 0755 -t /unlocker
 
 # Copy the vmx files
 logger -t unlocker Copying vmx files
@@ -38,12 +36,17 @@ rm -fv /bin/vmx-stats
 ln -s /unlocker/vmx-stats /bin/vmx-stats
 
 # Copy the libvmkctl.so file
-cp /lib/libvmkctl.so /unlocker/lib
+mkdir /unlocker/lib
+cp /lib/libvmkctl.so /unlocker/lib/libvmkctl.so
 rm -fv /lib/libvmkctl.so
 ln -s /unlocker/lib/libvmkctl.so /lib/libvmkctl.so
-cp /lib64/libvmkctl.so /unlocker/lib64
-rm -fv /lib64/libvmkctl.so
-ln -s /unlocker/lib64/libvmkctl.so /lib64/libvmkctl.so
+
+if [ -f "/lib64/libvmkctl.so" ] ; then
+    mkdir /unlocker/lib64
+    cp /lib64/libvmkctl.so /unlocker/lib64/libvmkctl.so
+    rm -fv /lib64/libvmkctl.so
+    ln -s /unlocker/lib64/libvmkctl.so /lib64/libvmkctl.so
+fi
 
 # Patch the vmx files
 logger -t unlocker Patching vmx files
