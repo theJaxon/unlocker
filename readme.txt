@@ -147,6 +147,6 @@ History
                - Get latest VMware tools command
                - Removed firmware files
                - Moved to PyInstaller 3.0
-14/11/15 2.0.9 - Fix ESXI 6.5 libvmkctl.so patching for 32 and 64-bit versions
+19/11/16 2.0.9 - Fix ESXI 6.5 libvmkctl.so patching for 32 and 64-bit versions
 
 (c) 2011-2016 Dave Parsons

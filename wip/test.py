@@ -116,6 +116,7 @@ def patchelf(f, oldoffset, newoffset):
                     print 'Relocation modified at: ' + hex(e_sh_offset + e_sh_entsize * j)
     print
 
+
 def patchkeys(f, key):
     # Setup struct pack string
     key_pack = '=4sB4sB6xQ'
