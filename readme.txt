@@ -1,6 +1,15 @@
 Mac OS X Unlocker for VMware V2.0
 =================================
 
++-----------------------------------------------------------------------------+
+| IMPORTANT:                                                                  |
+| ==========                                                                  |
+|                                                                             |
+| Always uninstall the previous version of the Unlocker before using a new    |
+| version. Failure to do this could render VMware unusable especially ESXi.   |
+|                                                                             |
++-----------------------------------------------------------------------------+
+
 1. Introduction
 ---------------
 
@@ -12,8 +21,8 @@ Version 2 has been tested against:
 
 * Workstation 11/12 on Windows and Linux
 * Player 7 & Workstation Player 12 on Windows and Linux
-* Fusion 7/8 on Mavericks and Yosemite
-* ESXi 6.0
+* Fusion 7/8 on El Capitan and Sierra
+* ESXi 6.0/6.5
 
 The patch code carries out the following modifications dependent on the product
 being patched:
@@ -32,9 +41,7 @@ message on those systems telling you that it will not be patched.
 In all cases make sure VMware is not running, and any background guests have
 been shutdown.
 
-The code is now Python as it makes the Unlocker easier to run and maintain on ESXi.
-There are some challenges to write the code as ESXi has a subset of Python 2.7 which
-constrains some modules that can be used.
+The code written in Python as it makes the Unlocker easier to run and maintain on ESXi.
 
 2. Prerequisites
 ----------------
@@ -42,7 +49,7 @@ constrains some modules that can be used.
 The code requires Python 2.7 to work. Most Linux distros, ESXi and OS X ship with a compatible
 Python interpreter and should work without requiring any additional software.
 
-Windows has a packaged version of the Python script using PyInstaller, and so does not
+Windows Unlocker has a packaged version of the Python script using PyInstaller, and so does not
 require Python to be installed.
 
 3. Limitations
@@ -103,7 +110,7 @@ You will need to transfer the zip file to the ESXi host either using vSphere cli
 Once uploaded you will need to either use the ESXi support console or use SSH to
 run the commands. Use the unzip command to extract the files. 
 
-<<< WARNING: use a datastore volume to run the scripts >>>
+<<< WARNING: use a datastore volume to store and run the scripts >>>
 
 Please note that you will need to reboot the host for the patches to become active.
 The patcher is embbedded in a shell script local.sh which is run at boot from /etc/rc.local.d.
@@ -117,8 +124,7 @@ esxi-uninstall.sh - restores VMware
 Note:
 1. Any changes you have made to local.sh will be lost. If you have made changes to 
    that file, you will need to merge them into the supplied local.sh file.
-2. The unlocker runs at boot time to patch the relevant files and it now survives 
-   an upgrade or patch to ESXi as local.sh is part of the persisted local state.
+2. The unlocker needs to be re-run after an upgrade or patch is installed on the ESXi host.
    
 8. Thanks
 ---------
@@ -127,7 +133,8 @@ Thanks to Zenith432 for originally building the C++ unlocker and Mac Son of Knif
 (MSoK) for all the testing and support.
 
 Thanks also to Sam B for finding the solution for ESXi 6 and helping me with
-debugging expertise. Sam also wrote the code for patching ESXi ELF files.
+debugging expertise. Sam also wrote the code for patching ESXi ELF files. He also 
+modified the unlocker code to run on Python 3 in the ESXi 6.5 environment.
 
 
 History

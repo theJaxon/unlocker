@@ -42,6 +42,7 @@ mv tmp/unlocker.vmtar.gz tmp/unlocker.vgz
 # Copy to bootbank and setup local.sh
 echo Copying unlocker.vgz to bootbank...
 cp tmp/unlocker.vgz /bootbank
+chmod +x local.sh
 cp local.sh /etc/rc.local.d/local.sh
 
 # Clean up
