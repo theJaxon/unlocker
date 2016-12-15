@@ -40,6 +40,7 @@ Offset  Length  struct Type Description
 0x18/24 0x30/48 48B    byte Data
 """
 
+from __future__ import print_function
 import struct
 import sys
 
@@ -48,18 +49,24 @@ if sys.version_info < (2, 7):
     sys.exit(1)
 
 
-def bytetohex(bytestr):
-    return ''.join(['%02X ' % ord(x) for x in bytestr]).strip()
+def bytetohex(data):
+    if sys.version_info > (3, 0):
+        # Python 3 code in this block
+        return "".join("{:02X} ".format(c) for c in data)
+    else:
+        # Python 2 code in this block
+        return "".join("{:02X} ".format(ord(c)) for c in data)
 
 
-def printkey(i, smc_key, smc_data):
-    print str(i+1).zfill(3) \
-        + ' ' + smc_key[0][::-1] \
-        + ' ' + str(smc_key[1]).zfill(2) \
-        + ' ' + smc_key[2][::-1].replace('\x00', ' ') \
-        + ' ' + '{0:#0{1}x}'.format(smc_key[3], 4) \
-        + ' ' + hex(smc_key[4]) \
-        + ' ' + bytetohex(smc_data)
+def printkey(i, offset, smc_key, smc_data):
+    print(str(i + 1).zfill(3)
+          + ' ' + hex(offset)
+          + ' ' + smc_key[0][::-1].decode('UTF-8')
+          + ' ' + str(smc_key[1]).zfill(2)
+          + ' ' + smc_key[2][::-1].replace(b'\x00', b' ').decode('UTF-8')
+          + ' ' + '{0:#0{1}x}'.format(smc_key[3], 4)
+          + ' ' + hex(smc_key[4])
+          + ' ' + bytetohex(smc_data))
 
 
 def dumpkeys(f, key):
@@ -77,10 +84,10 @@ def dumpkeys(f, key):
         smc_data = f.read(smc_key[1])
 
         # Dump entry
-        printkey(i, smc_key, smc_data)
+        printkey(i, offset, smc_key, smc_data)
 
         # Exit when OSK1 has been read
-        if smc_key[0] == '1KSO':
+        if smc_key[0] == b'1KSO':
             break
         else:
             i += 1
@@ -88,23 +95,23 @@ def dumpkeys(f, key):
 
 def dumpsmc(name):
 
-    with open(name, 'r+b') as f:
+    with open(name, 'rb') as f:
 
-        # Read file into string variable
+        # Read file into variable
         vmx = f.read()
 
-        print 'File: ' + name
+        print('File: ' + name)
 
         # Setup hex string for vSMC headers
         # These are the private and public key counts
-        smc_header_v0 = '\xF2\x00\x00\x00\xF0\x00\x00\x00'
-        smc_header_v1 = '\xB4\x01\x00\x00\xB0\x01\x00\x00'
+        smc_header_v0 = b'\xF2\x00\x00\x00\xF0\x00\x00\x00'
+        smc_header_v1 = b'\xB4\x01\x00\x00\xB0\x01\x00\x00'
 
         # Setup hex string for #KEY key
-        key_key = '\x59\x45\x4B\x23\x04\x32\x33\x69\x75'
+        key_key = b'\x59\x45\x4B\x23\x04\x32\x33\x69\x75'
 
         # Setup hex string for $Adr key
-        adr_key = '\x72\x64\x41\x24\x04\x32\x33\x69\x75'
+        adr_key = b'\x72\x64\x41\x24\x04\x32\x33\x69\x75'
 
         # Find the vSMC headers
         smc_header_v0_offset = vmx.find(smc_header_v0) - 8
@@ -118,31 +125,31 @@ def dumpsmc(name):
         smc_adr = vmx.find(adr_key)
 
         # Print vSMC0 tables and keys
-        print 'appleSMCTableV0 (smc.version = "0")'
-        print 'appleSMCTableV0 Address      : ' + hex(smc_header_v0_offset)
-        print 'appleSMCTableV0 Private Key #: 0xF2/242'
-        print 'appleSMCTableV0 Public Key  #: 0xF0/240'
+        print('appleSMCTableV0 (smc.version = "0")')
+        print('appleSMCTableV0 Address      : ' + hex(smc_header_v0_offset))
+        print('appleSMCTableV0 Private Key #: 0xF2/242')
+        print('appleSMCTableV0 Public Key  #: 0xF0/240')
 
         if (smc_adr - smc_key0) != 72:
-            print 'appleSMCTableV0 Table        : ' + hex(smc_key0)
+            print('appleSMCTableV0 Table        : ' + hex(smc_key0))
             dumpkeys(f, smc_key0)
         elif (smc_adr - smc_key1) != 72:
-            print 'appleSMCTableV0 Table        : ' + hex(smc_key1)
+            print('appleSMCTableV0 Table        : ' + hex(smc_key1))
             dumpkeys(f, smc_key1)
 
-        print
+        print('xxxx')
 
         # Print vSMC1 tables and keys
-        print 'appleSMCTableV1 (smc.version = "1")'
-        print 'appleSMCTableV1 Address      : ' + hex(smc_header_v1_offset)
-        print 'appleSMCTableV1 Private Key #: 0x01B4/436'
-        print 'appleSMCTableV1 Public Key  #: 0x01B0/432'
+        print('appleSMCTableV1 (smc.version = "1")')
+        print('appleSMCTableV1 Address      : ' + hex(smc_header_v1_offset))
+        print('appleSMCTableV1 Private Key #: 0x01B4/436')
+        print('appleSMCTableV1 Public Key  #: 0x01B0/432')
 
         if (smc_adr - smc_key0) == 72:
-            print 'appleSMCTableV1 Table        : ' + hex(smc_key0)
+            print('appleSMCTableV1 Table        : ' + hex(smc_key0))
             dumpkeys(f, smc_key0)
         elif (smc_adr - smc_key1) == 72:
-            print 'appleSMCTableV1 Table        : ' + hex(smc_key1)
+            print('appleSMCTableV1 Table        : ' + hex(smc_key1))
             dumpkeys(f, smc_key1)
 
         # Tidy up
@@ -150,19 +157,19 @@ def dumpsmc(name):
 
 
 def main():
-    print 'dumpsmc'
-    print '-------'
+    print('dumpsmc')
+    print('-------')
 
     if len(sys.argv) >= 2:
         vmx_path = sys.argv[1]
     else:
-        print 'Please pass file name!'
+        print('Please pass file name!')
         return
 
     try:
         dumpsmc(vmx_path)
     except IOError:
-        print 'Cannot find file ' + vmx_path
+        print('Cannot find file ' + vmx_path)
 
 
 if __name__ == '__main__':

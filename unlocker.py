@@ -40,7 +40,7 @@ Offset  Length  struct Type Description
 0x18/24 0x30/48 48B    byte Data
 """
 
-import codecs
+from __future__ import print_function
 import os
 import sys
 import struct
@@ -56,24 +56,42 @@ if sys.platform == 'win32' \
     from _winreg import *
 
 
-def bytetohex(bytestr):
-    return ''.join(['%02X ' % ord(x) for x in bytestr]).strip()
+def rot13(s):
+    chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz'
+    trans = chars[26:] + chars[:26]
+    rot_char = lambda c: trans[chars.find(c)] if chars.find(c) > -1 else c
+    return ''.join(rot_char(c) for c in s)
+
+
+def bytetohex(data):
+    if sys.version_info > (3, 0):
+        # Python 3 code in this block
+        return "".join("{:02X} ".format(c) for c in data)
+    else:
+        # Python 2 code in this block
+        return "".join("{:02X} ".format(ord(c)) for c in data)
+
+
+def joinpath(folder, file):
+    return os.path.join(folder, file)
 
 
 def printkey(i, offset, smc_key, smc_data):
-    print str(i + 1).zfill(3) \
-          + ' ' + hex(offset) \
-          + ' ' + smc_key[0][::-1] \
-          + ' ' + str(smc_key[1]).zfill(2) \
-          + ' ' + smc_key[2][::-1].replace('\x00', ' ') \
-          + ' ' + '{0:#0{1}x}'.format(smc_key[3], 4) \
-          + ' ' + hex(smc_key[4]) \
-          + ' ' + bytetohex(smc_data)
+    print(str(i + 1).zfill(3)
+          + ' ' + hex(offset)
+          + ' ' + smc_key[0][::-1].decode('UTF-8')
+          + ' ' + str(smc_key[1]).zfill(2)
+          + ' ' + smc_key[2][::-1].replace(b'\x00', b' ').decode('UTF-8')
+          + ' ' + '{0:#0{1}x}'.format(smc_key[3], 4)
+          + ' ' + hex(smc_key[4])
+          + ' ' + bytetohex(smc_data))
+
+
+E_CLASS64 = 2
+E_SHT_RELA = 4
 
 
 def patchelf(f, oldoffset, newoffset):
-    E_CLASS64 = 2
-    E_SHT_RELA = 4
     f.seek(0)
     magic = f.read(4)
     if not magic == b'\x7fELF':
@@ -90,20 +108,20 @@ def patchelf(f, oldoffset, newoffset):
     e_shnum = struct.unpack('=H', f.read(2))[0]
     e_shstrndx = struct.unpack('=H', f.read(2))[0]
 
-    print 'e_shoff: 0x{:x} e_shentsize: 0x{:x} e_shnum:0x{:x} e_shstrndx:0x{:x}'.format(e_shoff, e_shentsize,
-                                                                                        e_shnum, e_shstrndx)
+    print('e_shoff: 0x{:x} e_shentsize: 0x{:x} e_shnum:0x{:x} e_shstrndx:0x{:x}'.format(e_shoff, e_shentsize,
+                                                                                        e_shnum, e_shstrndx))
 
     for i in range(0, e_shnum):
         f.seek(e_shoff + i * e_shentsize)
         e_sh = struct.unpack('=LLQQQQLLQQ', f.read(e_shentsize))
-        # e_sh_name = e_sh[0]
+        e_sh_name = e_sh[0]
         e_sh_type = e_sh[1]
         e_sh_offset = e_sh[4]
         e_sh_size = e_sh[5]
         e_sh_entsize = e_sh[9]
         if e_sh_type == E_SHT_RELA:
-            e_sh_nument = e_sh_size / e_sh_entsize
-            print 'RELA at 0x{:x} with {:d} entries'.format(e_sh_offset, e_sh_nument)
+            e_sh_nument = int(e_sh_size / e_sh_entsize)
+            # print 'RELA at 0x{:x} with {:d} entries'.format(e_sh_offset, e_sh_nument)
             for j in range(0, e_sh_nument):
                 f.seek(e_sh_offset + e_sh_entsize * j)
                 rela = struct.unpack('=QQq', f.read(e_sh_entsize))
@@ -114,7 +132,7 @@ def patchelf(f, oldoffset, newoffset):
                     r_addend = newoffset
                     f.seek(e_sh_offset + e_sh_entsize * j)
                     f.write(struct.pack('=QQq', r_offset, r_info, r_addend))
-                    print 'Relocation modified at: ' + hex(e_sh_offset + e_sh_entsize * j)
+                    print('Relocation modified at: ' + hex(e_sh_offset + e_sh_entsize * j))
 
 
 def patchkeys(f, key):
@@ -136,15 +154,15 @@ def patchkeys(f, key):
         # Reset pointer to beginning of key entry
         f.seek(offset)
 
-        if smc_key[0] == 'SKL+':
+        if smc_key[0] == b'SKL+':
             # Use the +LKS data routine for OSK0/1
             smc_new_memptr = smc_key[4]
-            print '+LKS Key: '
+            print('+LKS Key: ')
             printkey(i, offset, smc_key, smc_data)
 
-        elif smc_key[0] == '0KSO':
+        elif smc_key[0] == b'0KSO':
             # Write new data routine pointer from +LKS
-            print 'OSK0 Key Before:'
+            print('OSK0 Key Before:')
             printkey(i, offset, smc_key, smc_data)
             smc_old_memptr = smc_key[4]
             f.seek(offset)
@@ -153,20 +171,20 @@ def patchkeys(f, key):
 
             # Write new data for key
             f.seek(offset + 24)
-            smc_new_data = codecs.decode('bheuneqjbexolgurfrjbeqfthneqrqcy', 'rot_13')
-            f.write(smc_new_data)
+            smc_new_data = rot13('bheuneqjbexolgurfrjbeqfthneqrqcy')
+            f.write(smc_new_data.encode('UTF-8'))
             f.flush()
 
             # Re-read and print key
             f.seek(offset)
             smc_key = struct.unpack(key_pack, f.read(24))
             smc_data = f.read(smc_key[1])
-            print 'OSK0 Key After:'
+            print('OSK0 Key After:')
             printkey(i, offset, smc_key, smc_data)
 
-        elif smc_key[0] == '1KSO':
+        elif smc_key[0] == b'1KSO':
             # Write new data routine pointer from +LKS
-            print 'OSK1 Key Before:'
+            print('OSK1 Key Before:')
             printkey(i, offset, smc_key, smc_data)
             smc_old_memptr = smc_key[4]
             f.seek(offset)
@@ -175,15 +193,15 @@ def patchkeys(f, key):
 
             # Write new data for key
             f.seek(offset + 24)
-            smc_new_data = codecs.decode('rnfrqbagfgrny(p)NccyrPbzchgreVap', 'rot_13')
-            f.write(smc_new_data)
+            smc_new_data = rot13('rnfrqbagfgrny(p)NccyrPbzchgreVap')
+            f.write(smc_new_data.encode('UTF-8'))
             f.flush()
 
             # Re-read and print key
             f.seek(offset)
             smc_key = struct.unpack(key_pack, f.read(24))
             smc_data = f.read(smc_key[1])
-            print 'OSK1 Key After:'
+            print('OSK1 Key After:')
             printkey(i, offset, smc_key, smc_data)
 
             # Finished so get out of loop
@@ -205,18 +223,18 @@ def patchsmc(name, sharedobj):
         # Read file into string variable
         vmx = f.read()
 
-        print 'File: ' + name
+        print('File: ' + name)
 
         # Setup hex string for vSMC headers
         # These are the private and public key counts
-        smc_header_v0 = '\xF2\x00\x00\x00\xF0\x00\x00\x00'
-        smc_header_v1 = '\xB4\x01\x00\x00\xB0\x01\x00\x00'
+        smc_header_v0 = b'\xF2\x00\x00\x00\xF0\x00\x00\x00'
+        smc_header_v1 = b'\xB4\x01\x00\x00\xB0\x01\x00\x00'
 
         # Setup hex string for #KEY key
-        key_key = '\x59\x45\x4B\x23\x04\x32\x33\x69\x75'
+        key_key = b'\x59\x45\x4B\x23\x04\x32\x33\x69\x75'
 
         # Setup hex string for $Adr key
-        adr_key = '\x72\x64\x41\x24\x04\x32\x33\x69\x75'
+        adr_key = b'\x72\x64\x41\x24\x04\x32\x33\x69\x75'
 
         # Find the vSMC headers
         smc_header_v0_offset = vmx.find(smc_header_v0) - 8
@@ -230,39 +248,39 @@ def patchsmc(name, sharedobj):
         smc_adr = vmx.find(adr_key)
 
         # Print vSMC0 tables and keys
-        print 'appleSMCTableV0 (smc.version = "0")'
-        print 'appleSMCTableV0 Address      : ' + hex(smc_header_v0_offset)
-        print 'appleSMCTableV0 Private Key #: 0xF2/242'
-        print 'appleSMCTableV0 Public Key  #: 0xF0/240'
+        print('appleSMCTableV0 (smc.version = "0")')
+        print('appleSMCTableV0 Address      : ' + hex(smc_header_v0_offset))
+        print('appleSMCTableV0 Private Key #: 0xF2/242')
+        print('appleSMCTableV0 Public Key  #: 0xF0/240')
 
         if (smc_adr - smc_key0) != 72:
-            print 'appleSMCTableV0 Table        : ' + hex(smc_key0)
+            print('appleSMCTableV0 Table        : ' + hex(smc_key0))
             smc_old_memptr, smc_new_memptr = patchkeys(f, smc_key0)
         elif (smc_adr - smc_key1) != 72:
-            print 'appleSMCTableV0 Table        : ' + hex(smc_key1)
+            print('appleSMCTableV0 Table        : ' + hex(smc_key1))
             smc_old_memptr, smc_new_memptr = patchkeys(f, smc_key1)
 
-        print
+        print()
 
         # Print vSMC1 tables and keys
-        print 'appleSMCTableV1 (smc.version = "1")'
-        print 'appleSMCTableV1 Address      : ' + hex(smc_header_v1_offset)
-        print 'appleSMCTableV1 Private Key #: 0x01B4/436'
-        print 'appleSMCTableV1 Public Key  #: 0x01B0/432'
+        print('appleSMCTableV1 (smc.version = "1")')
+        print('appleSMCTableV1 Address      : ' + hex(smc_header_v1_offset))
+        print('appleSMCTableV1 Private Key #: 0x01B4/436')
+        print('appleSMCTableV1 Public Key  #: 0x01B0/432')
 
         if (smc_adr - smc_key0) == 72:
-            print 'appleSMCTableV1 Table        : ' + hex(smc_key0)
+            print('appleSMCTableV1 Table        : ' + hex(smc_key0))
             smc_old_memptr, smc_new_memptr = patchkeys(f, smc_key0)
         elif (smc_adr - smc_key1) == 72:
-            print 'appleSMCTableV1 Table        : ' + hex(smc_key1)
+            print('appleSMCTableV1 Table        : ' + hex(smc_key1))
             smc_old_memptr, smc_new_memptr = patchkeys(f, smc_key1)
 
-        print
+        print()
 
         # Find matching RELA record in .rela.dyn in ESXi ELF files
         # This is temporary code until proper ELF parsing written
         if sharedobj:
-            print 'Modifying RELA records from: ' + hex(smc_old_memptr) + ' to ' + hex(smc_new_memptr)
+            print('Modifying RELA records from: ' + hex(smc_old_memptr) + ' to ' + hex(smc_new_memptr))
             patchelf(f, smc_old_memptr, smc_new_memptr)
 
         # Tidy up
@@ -272,7 +290,7 @@ def patchsmc(name, sharedobj):
 
 def patchbase(name):
     # Patch file
-    print 'GOS Patching: ' + name
+    print('GOS Patching: ' + name)
     f = open(name, 'r+b')
 
     # Entry to search for in GOS table
@@ -299,33 +317,33 @@ def patchbase(name):
         if flag == '\xBE':
             f.seek(offset + 32)
             f.write('\xBF')
-            print 'GOS Patched flag @: ' + hex(offset)
+            print('GOS Patched flag @: ' + hex(offset))
         else:
-            print 'GOS Unknown flag @: ' + hex(offset) + '/' + hex(int(flag))
+            print('GOS Unknown flag @: ' + hex(offset) + '/' + hex(int(flag)))
 
         offset += 33
 
     # Tidy up
     f.flush()
     f.close()
-    print 'GOS Patched: ' + name
+    print('GOS Patched: ' + name)
 
 
 def patchvmkctl(name):
     # Patch file
-    print 'smcPresent Patching: ' + name
+    print('smcPresent Patching: ' + name)
     f = open(name, 'r+b')
 
     # Read file into string variable
     vmkctl = f.read()
-    applesmc = vmkctl.find('applesmc')
+    applesmc = vmkctl.find(b'applesmc')
     f.seek(applesmc)
-    f.write('vmkernel')
+    f.write(b'vmkernel')
 
     # Tidy up
     f.flush()
     f.close()
-    print 'smcPresent Patched: ' + name
+    print('smcPresent Patched: ' + name)
 
 
 def main():
@@ -335,20 +353,23 @@ def main():
     else:
         osname = os.uname()[0].lower()
 
+    vmwarebase = ''
+    libvmkctl32 = ''
+    libvmkctl64 = ''
     vmx_so = False
 
     # Setup default paths
     if osname == 'darwin':
         vmx_path = '/Applications/VMware Fusion.app/Contents/Library/'
-        vmx = vmx_path + 'vmware-vmx'
-        vmx_debug = vmx_path + 'vmware-vmx-debug'
-        vmx_stats = vmx_path + 'vmware-vmx-stats'
+        vmx = joinpath(vmx_path, 'vmware-vmx')
+        vmx_debug = joinpath(vmx_path, 'vmware-vmx-debug')
+        vmx_stats = joinpath(vmx_path, 'vmware-vmx-stats')
 
     elif osname == 'linux':
         vmx_path = '/usr/lib/vmware/bin/'
-        vmx = vmx_path + 'vmware-vmx'
-        vmx_debug = vmx_path + 'vmware-vmx-debug'
-        vmx_stats = vmx_path + 'vmware-vmx-stats'
+        vmx = joinpath(vmx_path, 'vmware-vmx')
+        vmx_debug = joinpath(vmx_path, 'vmware-vmx-debug')
+        vmx_stats = joinpath(vmx_path, 'vmware-vmx-stats')
         vmx_version = subprocess.check_output(["vmplayer", "-v"])
         if vmx_version.startswith('VMware Player 12'):
             vmx_so = True
@@ -357,23 +378,23 @@ def main():
             vmwarebase = '/usr/lib/vmware/lib/libvmwarebase.so.0/libvmwarebase.so.0'
 
     elif osname == 'vmkernel':
-        vmx_path = '/unlocker/'
-        vmx = vmx_path + 'vmx'
-        vmx_debug = vmx_path + 'vmx-debug'
-        vmx_stats = vmx_path + 'vmx-stats'
+        vmx_path = os.path.dirname(os.path.abspath(__file__))
+        vmx = joinpath(vmx_path, 'tmp/bin/vmx')
+        vmx_debug = joinpath(vmx_path, 'tmp/bin/vmx-debug')
+        vmx_stats = joinpath(vmx_path, 'tmp/bin/vmx-stats')
         vmx_so = True
-        libvmkctl32 = vmx_path + 'lib/libvmkctl.so'
-        libvmkctl64 = vmx_path + 'lib64/libvmkctl.so'
+        libvmkctl32 = joinpath(vmx_path, 'tmp/lib/libvmkctl.so')
+        libvmkctl64 = joinpath(vmx_path, 'tmp/lib64/libvmkctl.so')
 
     elif osname == 'windows':
         reg = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
         key = OpenKey(reg, r'SOFTWARE\Wow6432Node\VMware, Inc.\VMware Workstation')
         vmwarebase_path = QueryValueEx(key, 'InstallPath')[0]
         vmx_path = QueryValueEx(key, 'InstallPath64')[0]
-        vmx = vmx_path + 'vmware-vmx.exe'
-        vmx_debug = vmx_path + 'vmware-vmx-debug.exe'
-        vmx_stats = vmx_path + 'vmware-vmx-stats.exe'
-        vmwarebase = vmwarebase_path + 'vmwarebase.dll'
+        vmx = joinpath(vmx_path, 'vmware-vmx.exe')
+        vmx_debug = joinpath(vmx_path, 'vmware-vmx-debug.exe')
+        vmx_stats = joinpath(vmx_path, 'vmware-vmx-stats.exe')
+        vmwarebase = joinpath(vmwarebase_path, 'vmwarebase.dll')
 
     else:
         print('Unknown Operating System: ' + osname)
@@ -382,27 +403,23 @@ def main():
     # Patch the vmx executables skipping stats version for Player
     patchsmc(vmx, vmx_so)
     patchsmc(vmx_debug, vmx_so)
-    try:
+    if os.path.isfile(vmx_stats):
         patchsmc(vmx_stats, vmx_so)
-    except IOError:
-        pass
 
     # Patch vmwarebase for Workstation and Player
     # Not required on Fusion or ESXi as table already has correct flags
     if vmwarebase != '':
         patchbase(vmwarebase)
     else:
-        print 'Patching vmwarebase is not required on this system'
+        print('Patching vmwarebase is not required on this system')
 
     if osname == 'vmkernel':
         # Patch ESXi 6.0 and 6.5 32 bit .so
         patchvmkctl(libvmkctl32)
 
-        # Try and patch ESXi 6.5 64 bit .so
-        try:
+        # Patch ESXi 6.5 64 bit .so
+        if os.path.isfile(libvmkctl64):
             patchvmkctl(libvmkctl64)
-        except IOError:
-            pass
 
 
 if __name__ == '__main__':
