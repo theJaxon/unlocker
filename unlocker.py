@@ -413,13 +413,14 @@ def main():
     else:
         print('Patching vmwarebase is not required on this system')
 
-    if osname == 'vmkernel':
-        # Patch ESXi 6.0 and 6.5 32 bit .so
-        patchvmkctl(libvmkctl32)
-
-        # Patch ESXi 6.5 64 bit .so
-        if os.path.isfile(libvmkctl64):
-            patchvmkctl(libvmkctl64)
+    # Now using sed in the local.sh script
+    # if osname == 'vmkernel':
+    #     # Patch ESXi 6.0 and 6.5 32 bit .so
+    #     patchvmkctl(libvmkctl32)
+    #
+    #     # Patch ESXi 6.5 64 bit .so
+    #     if os.path.isfile(libvmkctl64):
+    #         patchvmkctl(libvmkctl64)
 
 
 if __name__ == '__main__':

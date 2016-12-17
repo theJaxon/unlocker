@@ -9,6 +9,10 @@ echo Copyright: Dave Parsons 2011-16
 # Ensure we only use unmodified commands
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin
 
+# Ensure we run from the patcher directory
+cd "`dirname $0`"
+
+ # Create tmp folder for patching the files
 echo Creating unlocker vmtar disk
 
 # Create tmp folder for patching the files
@@ -18,23 +22,25 @@ mkdir -p tmp/lib
 cp -v /bin/vmx tmp/bin
 cp -v /bin/vmx-debug tmp/bin
 cp -v /bin/vmx-stats tmp/bin
-cp -v /lib/libvmkctl.so tmp/lib
 
-if [ -f /lib64/libvmkctl.so ]; then
-    mkdir -p tmp/lib64
-    cp -v /lib64/libvmkctl.so tmp/lib64
-fi
+# Now using sed in the local.sh script
+#cp -v /lib/libvmkctl.so tmp/lib
+#
+#if [ -f /lib64/libvmkctl.so ]; then
+#    mkdir -p tmp/lib64
+#    cp -v /lib64/libvmkctl.so tmp/lib64
+#fi
 
 # Patch the files
 python unlocker.py
 
 # Create the vmtar file for ESXi kernel
-if [ -f /lib64/libvmkctl.so ]; then
-    tar cvf tmp/unlocker.tar -C tmp bin lib lib64
-else
-    tar cvf tmp/unlocker.tar -C tmp bin lib
-fi
-
+#if [ -f /lib64/libvmkctl.so ]; then
+#    tar cvf tmp/unlocker.tar -C tmp bin lib lib64
+#else
+#    tar cvf tmp/unlocker.tar -C tmp bin lib
+#fi
+tar cvf tmp/unlocker.tar -C tmp bin
 vmtar -c tmp/unlocker.tar -v -o tmp/unlocker.vmtar
 gzip tmp/unlocker.vmtar
 mv tmp/unlocker.vmtar.gz tmp/unlocker.vgz
