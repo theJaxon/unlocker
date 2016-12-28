@@ -88,14 +88,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 vSMC Header Structure
-Offset  Length  struct Type Description
+Offset  Length  Struct Type Description
 ----------------------------------------
 0x00/00 0x08/08 Q      ptr  Offset to key table
 0x08/08 0x04/4  I      int  Number of private keys
 0x0C/12 0x04/4  I      int  Number of public keys
 
 vSMC Key Data Structure
-Offset  Length  struct Type Description
+Offset  Length  Struct Type Description
 ----------------------------------------
 0x00/00 0x04/04 4s     int  Key name (byte reversed e.g. #KEY is YEK#)
 0x04/04 0x01/01 B      byte Length of returned data
@@ -125,8 +125,8 @@ if sys.platform == 'win32' \
 def rot13(s):
     chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz'
     trans = chars[26:] + chars[:26]
-    rotchar = lambda c: trans[chars.find(c)] if chars.find(c) > -1 else c
-    return ''.join(rotchar(c) for c in s)
+    rot_char = lambda c: trans[chars.find(c)] if chars.find(c) > -1 else c
+    return ''.join(rot_char(c) for c in s)
 
 
 def bytetohex(data):
@@ -138,8 +138,8 @@ def bytetohex(data):
         return "".join("{:02X} ".format(ord(c)) for c in data)
 
 
-def joinpath(folder, filename):
-    return os.path.join(folder, filename)
+def joinpath(folder, file):
+    return os.path.join(folder, file)
 
 
 def printkey(i, offset, smc_key, smc_data):
@@ -180,7 +180,7 @@ def patchelf(f, oldoffset, newoffset):
     for i in range(0, e_shnum):
         f.seek(e_shoff + i * e_shentsize)
         e_sh = struct.unpack('=LLQQQQLLQQ', f.read(e_shentsize))
-        # e_sh_name = e_sh[0]
+        e_sh_name = e_sh[0]
         e_sh_type = e_sh[1]
         e_sh_offset = e_sh[4]
         e_sh_size = e_sh[5]
@@ -230,6 +230,7 @@ def patchkeys(f, key):
             # Write new data routine pointer from +LKS
             print('OSK0 Key Before:')
             printkey(i, offset, smc_key, smc_data)
+            smc_old_memptr = smc_key[4]
             f.seek(offset)
             f.write(struct.pack(key_pack, smc_key[0], smc_key[1], smc_key[2], smc_key[3], smc_new_memptr))
             f.flush()
@@ -251,6 +252,7 @@ def patchkeys(f, key):
             # Write new data routine pointer from +LKS
             print('OSK1 Key Before:')
             printkey(i, offset, smc_key, smc_data)
+            smc_old_memptr = smc_key[4]
             f.seek(offset)
             f.write(struct.pack(key_pack, smc_key[0], smc_key[1], smc_key[2], smc_key[3], smc_new_memptr))
             f.flush()
