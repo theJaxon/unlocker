@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 The MIT License (MIT)
 
@@ -22,14 +23,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 vSMC Header Structure
-Offset  Length  struct Type Description
+Offset  Length  Struct Type Description
 ----------------------------------------
 0x00/00 0x08/08 Q      ptr  Offset to key table
 0x08/08 0x04/4  I      int  Number of private keys
 0x0C/12 0x04/4  I      int  Number of public keys
 
 vSMC Key Data Structure
-Offset  Length  struct Type Description
+Offset  Length  Struct Type Description
 ----------------------------------------
 0x00/00 0x04/04 4s     int  Key name (byte reversed e.g. #KEY is YEK#)
 0x04/04 0x01/01 B      byte Length of returned data

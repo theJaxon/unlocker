@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 The MIT License (MIT)
 
@@ -22,14 +23,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 vSMC Header Structure
-Offset  Length  struct Type Description
+Offset  Length  Struct Type Description
 ----------------------------------------
 0x00/00 0x08/08 Q      ptr  Offset to key table
 0x08/08 0x04/4  I      int  Number of private keys
 0x0C/12 0x04/4  I      int  Number of public keys
 
 vSMC Key Data Structure
-Offset  Length  struct Type Description
+Offset  Length  Struct Type Description
 ----------------------------------------
 0x00/00 0x04/04 4s     int  Key name (byte reversed e.g. #KEY is YEK#)
 0x04/04 0x01/01 B      byte Length of returned data
@@ -379,12 +380,12 @@ def main():
 
     elif osname == 'vmkernel':
         vmx_path = os.path.dirname(os.path.abspath(__file__))
-        vmx = joinpath(vmx_path, 'tmp/bin/vmx')
-        vmx_debug = joinpath(vmx_path, 'tmp/bin/vmx-debug')
-        vmx_stats = joinpath(vmx_path, 'tmp/bin/vmx-stats')
+        vmx = joinpath(vmx_path, '/unlocker/bin/vmx')
+        vmx_debug = joinpath(vmx_path, '/unlocker/bin/vmx-debug')
+        vmx_stats = joinpath(vmx_path, '/unlocker/bin/vmx-stats')
         vmx_so = True
-        libvmkctl32 = joinpath(vmx_path, 'tmp/lib/libvmkctl.so')
-        libvmkctl64 = joinpath(vmx_path, 'tmp/lib64/libvmkctl.so')
+        libvmkctl32 = joinpath(vmx_path, '/unlocker/lib/libvmkctl.so')
+        libvmkctl64 = joinpath(vmx_path, '/unlocker/lib64/libvmkctl.so')
 
     elif osname == 'windows':
         reg = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
@@ -414,13 +415,13 @@ def main():
         print('Patching vmwarebase is not required on this system')
 
     # Now using sed in the local.sh script
-    # if osname == 'vmkernel':
-    #     # Patch ESXi 6.0 and 6.5 32 bit .so
-    #     patchvmkctl(libvmkctl32)
-    #
-    #     # Patch ESXi 6.5 64 bit .so
-    #     if os.path.isfile(libvmkctl64):
-    #         patchvmkctl(libvmkctl64)
+    if osname == 'vmkernel':
+        # Patch ESXi 6.0 and 6.5 32 bit .so
+        patchvmkctl(libvmkctl32)
+
+        # Patch ESXi 6.5 64 bit .so
+        if os.path.isfile(libvmkctl64):
+            patchvmkctl(libvmkctl64)
 
 
 if __name__ == '__main__':
