@@ -63,8 +63,8 @@ Latest Linux and ESXi products are OK and do not show this problem.
 | IMPORTANT:                                                                  |
 | ==========                                                                  |
 |                                                                             |
-| If you create a new VM using version 11 or 12 hardware VMware may stop and  |
-| create a core dump. There are two options to work around this issue:        |
+| If you create a new VM using version 11, 12 or 13 hardware VMware may stop  |
+| and create a core dump. There are two options to work around this issue:    |
 |                                                                             |
 | 1. Change the VM to be HW 10 - this does not affect performance.            |
 | 2. Edit the VMX file and add:                                               |
@@ -125,6 +125,8 @@ Note:
 1. Any changes you have made to local.sh will be lost. If you have made changes to 
    that file, you will need to merge them into the supplied local.sh file.
 2. The unlocker needs to be re-run after an upgrade or patch is installed on the ESXi host.
+3. The macOS VMwwre tools are no longer shipped in the image from ESXi 6.5. They have to be
+   downloaded and installed manually onto the ESXi host.
    
 8. Thanks
 ---------
@@ -133,7 +135,7 @@ Thanks to Zenith432 for originally building the C++ unlocker and Mac Son of Knif
 (MSoK) for all the testing and support.
 
 Thanks also to Sam B for finding the solution for ESXi 6 and helping me with
-debugging expertise. Sam also wrote the code for patching ESXi ELF files. He also 
+debugging expertise. Sam also wrote the code for patching ESXi ELF files and
 modified the unlocker code to run on Python 3 in the ESXi 6.5 environment.
 
 
@@ -154,6 +156,8 @@ History
                - Get latest VMware tools command
                - Removed firmware files
                - Moved to PyInstaller 3.0
-19/11/16 2.0.9 - Fix ESXI 6.5 libvmkctl.so patching for 32 and 64-bit versions
+29/12/16 2.0.9 - New version to support ESXi 6.5
+               - Disable new hostd VMX sandbox
+               - Fix ESXI 6.5 libvmkctl.so patching for 32 and 64-bit versions
 
 (c) 2011-2016 Dave Parsons
