@@ -121,12 +121,18 @@ by running chmod +x against the 2 files.
 esxi-install.sh   - patches VMware 
 esxi-uninstall.sh - restores VMware 
 
+There is a boot option for ESXi that disables the unlocker if there is a problem.
+
+At the ESXi boot screen press shift + o to get the boot options and add nounlocker.
+
 Note:
 1. Any changes you have made to local.sh will be lost. If you have made changes to 
    that file, you will need to merge them into the supplied local.sh file.
 2. The unlocker needs to be re-run after an upgrade or patch is installed on the ESXi host.
 3. The macOS VMwwre tools are no longer shipped in the image from ESXi 6.5. They have to be
-   downloaded and installed manually onto the ESXi host.
+   downloaded and installed manually onto the ESXi host. For additional details see this web page:
+
+   https://blogs.vmware.com/vsphere/2016/10/introducing-vmware-tools-10-1-10-0-12.html
    
 8. Thanks
 ---------
@@ -159,5 +165,6 @@ History
 29/12/16 2.0.9 - New version to support ESXi 6.5
                - Disable new hostd VMX sandbox
                - Fix ESXI 6.5 libvmkctl.so patching for 32 and 64-bit versions
+               - Added ESXi boot option to disable unlocker (nounlocker)
 
 (c) 2011-2016 Dave Parsons
