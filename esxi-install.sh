@@ -13,6 +13,6 @@ export PATH=/bin:/sbin:/usr/bin:/usr/sbin
 echo Installing local.sh
 chmod +x local.sh
 cp local.sh /etc/rc.local.d/local.sh
-python esxi-config.py
+python esxi-config.py insert
 backup.sh 0
 echo Success - please now restart the server!
