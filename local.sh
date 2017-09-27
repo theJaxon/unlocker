@@ -11,7 +11,7 @@ export PATH=/bin:/sbin:/usr/bin:/usr/sbin
 
 # Exit if boot option specified
 if bootOption -o | grep -q 'nounlocker'; then
-    logger -t unlocker Disbaled via nounlocker boot option
+    logger -t unlocker disabled via nounlocker boot option
     exit 0
 fi
 
@@ -107,6 +107,7 @@ Offset  Length  Struct Type Description
 """
 
 from __future__ import print_function
+import codecs
 import os
 import sys
 import struct
@@ -125,8 +126,8 @@ if sys.platform == 'win32' \
 def rot13(s):
     chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz'
     trans = chars[26:] + chars[:26]
-    rot_char = lambda c: trans[chars.find(c)] if chars.find(c) > -1 else c
-    return ''.join(rot_char(c) for c in s)
+    rotchar = lambda c: trans[chars.find(c)] if chars.find(c) > -1 else c
+    return ''.join(rotchar(c) for c in s)
 
 
 def bytetohex(data):
@@ -237,7 +238,7 @@ def patchkeys(f, key):
 
             # Write new data for key
             f.seek(offset + 24)
-            smc_new_data = rot13('bheuneqjbexolgurfrjbeqfthneqrqcy')
+            smc_new_data = codecs.encode('bheuneqjbexolgurfrjbeqfthneqrqcy', 'rot_13')
             f.write(smc_new_data.encode('UTF-8'))
             f.flush()
 
@@ -259,7 +260,7 @@ def patchkeys(f, key):
 
             # Write new data for key
             f.seek(offset + 24)
-            smc_new_data = rot13('rnfrqbagfgrny(p)NccyrPbzchgreVap')
+            smc_new_data = codecs.encode('rnfrqbagfgrny(p)NccyrPbzchgreVap', 'rot_13')
             f.write(smc_new_data.encode('UTF-8'))
             f.flush()
 

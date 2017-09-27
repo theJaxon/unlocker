@@ -138,7 +138,7 @@ def dumpsmc(name):
             print('appleSMCTableV0 Table        : ' + hex(smc_key1))
             dumpkeys(f, smc_key1)
 
-        print('xxxx')
+        print()
 
         # Print vSMC1 tables and keys
         print('appleSMCTableV1 (smc.version = "1")')

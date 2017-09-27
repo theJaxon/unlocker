@@ -11,7 +11,7 @@ export PATH=/bin:/sbin:/usr/bin:/usr/sbin
 
 # Exit if boot option specified
 if bootOption -o | grep -q 'nounlocker'; then
-    logger -t unlocker Disbaled via nounlocker boot option
+    logger -t unlocker disabled via nounlocker boot option
     exit 0
 fi
 

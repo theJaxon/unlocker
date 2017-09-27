@@ -21,9 +21,11 @@ def testline(line, test):
 
 def main():
     vmsvc = '<vmsvc>\n'
-    sandbox = '<useVmxSandbox>false</useVmxSandbox>\n'
+    starttag = '<useVmxSandbox>'
+    endtag = '</useVmxSandbox>'
 
-    with open('/etc/vmware/hostd/config.xml', 'r+') as f:
+    # with open('/etc/vmware/hostd/config.xml', 'r+') as f:
+    with open('samples/config.xml', 'r+') as f:
         data = f.readlines()
 
         # Search for the relevant XML tags
@@ -35,29 +37,51 @@ def main():
             if testline(line, vmsvc):
                 vmsvcindex = i
 
-            if testline(line, sandbox):
+            if testline(line, starttag):
                 sandboxindex = i
 
             # print(line, end='')
             i += 1
 
-        # Simple toggle on or off depending if found
-        if sandboxindex != 0 and sys.argv[1] == 'delete':
-            print('Removing useVmxSandbox')
-            del data[sandboxindex]
-        elif sandboxindex == 0 and sys.argv[1] == 'insert':
-            print('Adding useVmxSandbox')
-            pad = len(data[vmsvcindex + 1]) - len(data[vmsvcindex + 1].lstrip())
-            data.insert(vmsvcindex + 1, (" " * pad) + sandbox)
-        else:
+        # If vmsvc tag not found then file is probably corrupt
+        if vmsvcindex is None:
+            print('ESXi Config - config.xml is corrupt')
+            return False
+
+        # Remove the existing line if prsent
+        del data[sandboxindex]
+
+        # Now add line with correct flag
+        pad = len(data[vmsvcindex + 1]) - len(data[vmsvcindex + 1].lstrip())
+
+        if sys.argv[1] in ['on', 'off']:
             pass
+
+        if sys.argv[1] == 'off':
+            print('ESXi Config - useVmxSandbox off')
+            data.insert(vmsvcindex + 1, (" " * pad) + sandboxoff)
+
+        elif sys.argv[1] == 'on':
+            print('ESXi Config - useVmxSandbox on')
+            data.insert(vmsvcindex + 1, (" " * pad) + sandboxon)
+
+        else:
+            print('ESXi Config - Incorrect paramter passed')
+            return False
 
         # Rewrite the config.xml file
         f.seek(0)
         f.write(''.join(data))
         f.truncate()
         f.close()
+        return True
 
 
 if __name__ == '__main__':
-    main()
+
+    if len(sys.argv) == 1:
+        sys.exit(1)
+    if main():
+        sys.exit(0)
+    else:
+        sys.exit(1)
