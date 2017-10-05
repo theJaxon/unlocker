@@ -24,8 +24,7 @@ def main():
     starttag = '<useVmxSandbox>'
     endtag = '</useVmxSandbox>'
 
-    # with open('/etc/vmware/hostd/config.xml', 'r+') as f:
-    with open('samples/config.xml', 'r+') as f:
+    with open('/etc/vmware/hostd/config.xml', 'r+') as f:
         data = f.readlines()
 
         # Search for the relevant XML tags

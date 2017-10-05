@@ -1,5 +1,5 @@
-Mac OS X Unlocker for VMware V2.0
-=================================
+macOS Unlocker for VMware V2.0
+==============================
 
 +-----------------------------------------------------------------------------+
 | IMPORTANT:                                                                  |
@@ -13,7 +13,8 @@ Mac OS X Unlocker for VMware V2.0
 1. Introduction
 ---------------
 
-Unlocker 2 is designed for Workstation 11/12, Player 7/12, ESXi 6 and Fusion 7/8.
+Unlocker 2 is designed for Workstation 11/12/14, Player 7/12/14, ESXi 6.5
+and Fusion 7/8/10.
 
 If you are using an earlier product please continue using Unlocker 1 
 
@@ -162,9 +163,8 @@ History
                - Get latest VMware tools command
                - Removed firmware files
                - Moved to PyInstaller 3.0
-29/12/16 2.0.9 - New version to support ESXi 6.5
-               - Disable new hostd VMX sandbox
-               - Fix ESXI 6.5 libvmkctl.so patching for 32 and 64-bit versions
+05/10/17 2.0.9 - New version to support ESXi 6.5, Workstation/Player 14 and Fusion 10
+               - Removed support for ESXi 6.0
                - Added ESXi boot option to disable unlocker (nounlocker)
 
-(c) 2011-2016 Dave Parsons
+(c) 2011-2017 Dave Parsons
