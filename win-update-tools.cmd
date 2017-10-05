@@ -19,7 +19,7 @@ echo VMware is installed at: %InstallPath%
 
 echo Getting VMware Tools...
 gettools.exe
-xcopy /F /Y .\tools\darwin.* "%InstallPath%"
+xcopy /F /Y .\tools\darwin*.* "%InstallPath%"
 
 popd
 

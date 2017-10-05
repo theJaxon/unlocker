@@ -31,7 +31,7 @@ taskkill /F /IM vmware-tray.exe > NUL 2>&1
 echo Restoring files...
 xcopy /F /Y .\backup\x64\*.* "%InstallPath%x64\"
 xcopy /F /Y .\backup\*.* "%InstallPath%"
-del /f "%InstallPath%"darwin.*
+del /f "%InstallPath%"darwin*.*
 
 echo Removing backup files...
 rd /s /q .\backup > NUL 2>&1

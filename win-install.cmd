@@ -38,7 +38,7 @@ unlocker.exe
 
 echo Getting VMware Tools...
 gettools.exe
-xcopy /F /Y .\tools\darwin.* "%InstallPath%"
+xcopy /F /Y .\tools\darwin*.* "%InstallPath%"
 
 echo Starting VMware services...
 net start VMUSBArbService > NUL 2>&1

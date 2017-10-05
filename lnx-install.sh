@@ -31,7 +31,7 @@ python2 ./unlocker.py
 
 echo Getting VMware Tools...
 python2 gettools.py
-cp ./tools/darwin.* /usr/lib/vmware/isoimages/
+cp ./tools/darwin*.* /usr/lib/vmware/isoimages/
 
 echo Finished!
 
