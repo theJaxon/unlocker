@@ -20,34 +20,34 @@ If you are using an earlier product please continue using Unlocker 1
 
 Version 2 has been tested against:
 
-* Workstation 11/12 on Windows and Linux
-* Player 7 & Workstation Player 12 on Windows and Linux
-* Fusion 7/8 on El Capitan and Sierra
-* ESXi 6.0/6.5
+* Workstation 11/12/14 on Windows and Linux
+* Workstation Player 7/12/14 on Windows and Linux
+* Fusion 7/8/10 on Sierra
+* ESXi 6.5U1
 
 The patch code carries out the following modifications dependent on the product
 being patched:
 
-* Fix vmware-vmx and derivatives to allow Mac OS X to boot
+* Fix vmware-vmx and derivatives to allow macOS to boot
 * Fix vmwarebase .dll or .so to allow Apple to be selected during VM creation
 * Fix libvmkctl.so on ESXi 6 to allow use with vCenter
-* Download a copy of the latest VMware Tools for OS X
+* Download a copy of the latest VMware Tools for macOS
 
 Note that not all products recognise the darwin.iso via install tools menu item.
 You will have to manually mount the darwin.iso for example on Workstation 11 and Player 7.
 
-The vmwarebase code does not need to be patched on OS X or ESXi so you will see a
+The vmwarebase code does not need to be patched on macOS or ESXi so you will see a
 message on those systems telling you that it will not be patched.
 
 In all cases make sure VMware is not running, and any background guests have
 been shutdown.
 
-The code written in Python as it makes the Unlocker easier to run and maintain on ESXi.
+The code is written in Python as it makes the Unlocker easier to run and maintain on ESXi.
 
 2. Prerequisites
 ----------------
 
-The code requires Python 2.7 to work. Most Linux distros, ESXi and OS X ship with a compatible
+The code requires Python 2.7 to work. Most Linux distros, ESXi and macOS ship with a compatible
 Python interpreter and should work without requiring any additional software.
 
 Windows Unlocker has a packaged version of the Python script using PyInstaller, and so does not
@@ -80,7 +80,7 @@ Explorer right click on the command file and select "Run as administrator".
 
 win-install.cmd   - patches VMware
 win-uninstall.cmd - restores VMware
-win-update-tools.cmd - retrieves latest OS X guest tools
+win-update-tools.cmd - retrieves latest macOS guest tools
 
 5. Linux
 ---------
@@ -91,14 +91,14 @@ by running chmod +x against the 2 files.
 
 lnx-install.sh   - patches VMware
 lnx-uninstall.sh - restores VMware
-lnx-update-tools.cmd - retrieves latest OS X guest tools
+lnx-update-tools.cmd - retrieves latest macOS guest tools
 
-6. Mac OS X
------------
-On Mac OS X you will need to be either root or use sudo to run the scripts.
-This is really only needed if you want to use client versions of Mac OS X.
+6. macOS
+--------
+On macOS you will need to be either root or use sudo to run the scripts.
+This is really only needed if you want to use client versions of macOS.
 
-You may need to ensure the OS X scripts have execute permissions
+You may need to ensure the macOS scripts have execute permissions
 by running chmod +x against the 2 files.
 
 osx-install.sh   - patches VMware

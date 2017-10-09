@@ -1,7 +1,8 @@
 backup/
 tools/
 .idea/
-pyinstaller/
 samples/
 tests/
-
+build/
+dist/
+*.spec
