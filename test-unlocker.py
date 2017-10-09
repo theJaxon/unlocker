@@ -40,7 +40,7 @@ def main():
     dumpsmc.dumpsmc('./tests/esxi/esxi600/vmx')
     unlocker.patchsmc('./tests/esxi/esxi600/vmx', True)
     shutil.copyfile('./samples/esxi/esxi650/vmx', './tests/esxi/esxi650/vmx')
-    dumpsmc.dumpsmc('./tests/esxi/esxi600/vmx')
+    dumpsmc.dumpsmc('./tests/esxi/esxi650/vmx')
     unlocker.patchsmc('./tests/esxi/esxi650/vmx', True)
     shutil.copyfile('./samples/esxi/esxi600/libvmkctl.so', './tests/esxi/esxi600/libvmkctl.so')
     unlocker.patchvmkctl('./tests/esxi/esxi600/libvmkctl.so')

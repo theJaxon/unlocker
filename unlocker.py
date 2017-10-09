@@ -324,10 +324,10 @@ def patchbase(name):
         flag = ord(f.read(1))
         flag = set_bit(flag, 0)
         flag = chr(flag)
-        f.seek(offset + 31)
+        f.seek(offset + 32)
         f.write(flag)
         print('GOS Patched flag @: ' + hex(offset))
-        offset += 33
+        offset += 40
 
     # Tidy up
     f.flush()
@@ -376,8 +376,7 @@ def main():
         vmx = joinpath(vmx_path, 'vmware-vmx')
         vmx_debug = joinpath(vmx_path, 'vmware-vmx-debug')
         vmx_stats = joinpath(vmx_path, 'vmware-vmx-stats')
-        vmx_version = subprocess.check_output(["vmplayer", "-v"])
-        if vmx_version.startswith('VMware Player 12'):
+        if os.path.isfile('/usr/lib/vmware/lib/libvmwarebase.so/libvmwarebase.so'):
             vmx_so = True
             vmwarebase = '/usr/lib/vmware/lib/libvmwarebase.so/libvmwarebase.so'
         else:
