@@ -1,7 +1,9 @@
 from __future__ import print_function
-import unlocker
-import dumpsmc
+
 import shutil
+
+import dumpsmc
+import unlocker
 
 
 def main():
@@ -48,6 +50,8 @@ def main():
     unlocker.patchvmkctl('./tests/esxi/esxi650/lib/libvmkctl.so')
     shutil.copyfile('./samples/esxi/esxi650/lib64/libvmkctl.so', './tests/esxi/esxi650/lib64/libvmkctl.so')
     unlocker.patchvmkctl('./tests/esxi/esxi650/lib64/libvmkctl.so')
+    shutil.copyfile('./samples/esxi/esxi650/config.xml', './tests/esxi/esxi650/config.xml')
+    esxiconfig.main('./tests/esxi/esxi650/config.xml')
 
 
 if __name__ == '__main__':

@@ -19,12 +19,12 @@ def testline(line, test):
         return False
 
 
-def main():
+def main(filename):
     vmsvc = '<vmsvc>\n'
     starttag = '<useVmxSandbox>'
     endtag = '</useVmxSandbox>'
 
-    with open('/etc/vmware/hostd/config.xml', 'r+') as f:
+    with open(filename, 'r+') as f:
         data = f.readlines()
 
         # Search for the relevant XML tags
@@ -58,11 +58,11 @@ def main():
 
         if sys.argv[1] == 'off':
             print('ESXi Config - useVmxSandbox off')
-            data.insert(vmsvcindex + 1, (" " * pad) + sandboxoff)
+            data.insert(vmsvcindex + 1, (" " * pad) + 'false')
 
         elif sys.argv[1] == 'on':
             print('ESXi Config - useVmxSandbox on')
-            data.insert(vmsvcindex + 1, (" " * pad) + sandboxon)
+            data.insert(vmsvcindex + 1, (" " * pad) + 'true')
 
         else:
             print('ESXi Config - Incorrect paramter passed')
@@ -80,7 +80,7 @@ if __name__ == '__main__':
 
     if len(sys.argv) == 1:
         sys.exit(1)
-    if main():
+    if main('/etc/vmware/hostd/config.xml'):
         sys.exit(0)
     else:
         sys.exit(1)
