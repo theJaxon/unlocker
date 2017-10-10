@@ -1,4 +1,4 @@
-macOS Unlocker for VMware V2.0
+macOS Unlocker for VMware V2.1
 ==============================
 
 +-----------------------------------------------------------------------------+
@@ -16,7 +16,8 @@ macOS Unlocker for VMware V2.0
 Unlocker 2 is designed for Workstation 11/12/14, Player 7/12/14, ESXi 6.5
 and Fusion 7/8/10.
 
-If you are using an earlier product please continue using Unlocker 1 
+If you are using an earlier product please continue using Unlocker 1 and use
+Unlcoker 2.0 for ESXi 6.0
 
 Version 2 has been tested against:
 
@@ -148,22 +149,7 @@ modified the unlocker code to run on Python 3 in the ESXi 6.5 environment.
 
 History
 -------
-12/12/14 2.0.0 - First release
-13/13/14 2.0.1 - Removed need for Python for Windows
-13/13/14 2.0.2 - darwin.iso was missing from zip file
-02/01/15 2.0.3 - Added EFI firmware files to remove Server check
-               - Refactored Python code
-07/01/15 2.0.4 - Added View USB Service to Windows batch files
-               - Fixed broken GOS Table patching on Linux
-18/06/15 2.0.5 - ESXi 6 working
-               - Latest tools from Fusion 7.1.2
-20/06/15 2.0.6 - ESXi 6 patch for smcPresent vCenter compatibility
-16/09/15 2.0.7 - Workstation 12 on Linux fixes
-14/11/15 2.0.8 - Player 12 on Linux fixes
-               - Get latest VMware tools command
-               - Removed firmware files
-               - Moved to PyInstaller 3.0
-05/10/17 2.0.9 - New version to support ESXi 6.5, Workstation/Player 14 and Fusion 10
+10/10/17 2.1.0 - New version to support ESXi 6.5, Workstation/Player 14 and Fusion 10
                - Removed support for ESXi 6.0
                - Added ESXi boot option to disable unlocker (nounlocker)
 
