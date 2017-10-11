@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo VMware Get OS X Tools 2.1.0
+echo VMware Get OS X Tools 2.1.1
 echo ===============================
 echo Copyright: Dave Parsons 2015-16
 

@@ -40,7 +40,7 @@ Offset  Length  Struct Type Description
 0x10/16 0x08/08 Q      ptr  Internal VMware routine
 0x18/24 0x30/48 48B    byte Data
 """
-
+"""
 
 from __future__ import print_function
 import struct
