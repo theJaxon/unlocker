@@ -6,7 +6,7 @@ macOS Unlocker for VMware V2.1
 | ==========                                                                  |
 |                                                                             |
 | Always uninstall the previous version of the Unlocker before using a new    |
-| version. Failure to do this could render VMware unusablei.                  |
+| version. Failure to do this could render VMware unusable.                  |
 |                                                                             |
 +-----------------------------------------------------------------------------+
 
@@ -16,8 +16,7 @@ macOS Unlocker for VMware V2.1
 Unlocker 2 is designed for Workstation 11/12/14, Player 7/12/14, 
 and Fusion 7/8/10.
 
-If you are using an earlier product please continue using Unlocker 1 and use
-Unlocker 2.0 for ESXi 6.0
+If you are using an earlier product please continue using Unlocker 1.
 
 Version 2 has been tested against:
 
@@ -57,7 +56,7 @@ and so does not require Python to be installed.
 
 If you are using VMware Player or Workstation on Windows you may get a core dump.
 
-Latest Linux and ESXi products are OK and do not show this problem.
+Latest Linux products are OK and do not show this problem.
 
 +-----------------------------------------------------------------------------+
 | IMPORTANT:                                                                  |
