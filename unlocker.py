@@ -44,9 +44,10 @@ Offset  Length  Struct Type Description
 from __future__ import print_function
 import codecs
 import os
-import sys
+import six
 import struct
 import subprocess
+import sys
 
 if sys.version_info < (2, 7):
     sys.stderr.write('You need Python 2.7 or later\n')
@@ -302,12 +303,8 @@ def patchbase(name):
 
     # Entry to search for in GOS table
     # Should work for 12 & 14 of Workstation...
-    darwin = (
-        '\x10\x00\x00\x00\x10\x00\x00\x00'
-        '\x02\x00\x00\x00\x00\x00\x00\x00'
-        '\x00\x00\x00\x00\x00\x00\x00\x00'
-        '\x00\x00\x00\x00\x00\x00\x00\x00'
-    )
+    darwin = b'\x10\x00\x00\x00\x10\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00' \
+             '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
 
     # Read file into string variable
     base = f.read()
@@ -416,9 +413,9 @@ def main():
     if vmwarebase != '':
         patchbase(vmwarebase)
     else:
-        print('Patching vmwarebase is not required on this system')
+        pass
 
-    # Now using sed in the local.sh script
+    # Patch libvmkctl to return Apple SMC present
     if osname == 'vmkernel':
         # Patch ESXi 6.0 and 6.5 32 bit .so
         patchvmkctl(libvmkctl32)

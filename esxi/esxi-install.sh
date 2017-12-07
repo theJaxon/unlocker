@@ -17,13 +17,9 @@ elif [ "$VER" == "6.5.0" ]; then
     echo Installing local.sh
     chmod +x local.sh
     cp local.sh /etc/rc.local.d/local.sh
-    python esxiconfig.py on
+    python esxi-config.py on
     backup.sh 0
     echo "Success - please now restart the server!"
 else
-   echo "Unknown ESXi version"
+    echo "Unknown ESXi version"
 fi
-
-
-
-
