@@ -231,7 +231,7 @@ def patchsmc(name, sharedobj):
         # Read file into string variable
         vmx = f.read()
 
-        print('File: ' + name)
+        print('File: ' + name + '\n')
 
         # Setup hex string for vSMC headers
         # These are the private and public key counts
