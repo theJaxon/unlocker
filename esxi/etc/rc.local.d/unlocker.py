@@ -1,73 +1,8 @@
-#!/bin/sh
-set -e
-set -x
-
-echo VMware ESXi 6.x Unlocker 2.1.0
-echo ===============================
-echo Copyright: Dave Parsons 2011-17
-
-# Ensure we only use unmodified commands
-export PATH=/bin:/sbin:/usr/bin:/usr/sbin
-
-# Exit if boot option specified
-if bootOption -o | grep -q 'nounlocker'; then
-    logger -t unlocker disabled via nounlocker boot option
-    exit 0
-fi
-
-# Make sure working files are removed
-if [ -d /unlocker ]; then
-	logger -t unlocker Removing current patches
-	rm -rfv /unlocker
-fi
-
-# Create new RAM disk and map to /unlocker
-logger -t unlocker Creating RAM disk
-mkdir /unlocker
-localcli system visorfs ramdisk add -m 200 -M 200 -n unlocker -p 0755 -t /unlocker
-logger -t unlocker Stopping hostd daemon
-/etc/init.d/hostd stop
-
-# Copy the vmx files
-logger -t unlocker Copying vmx files
-mkdir /unlocker/bin
-cp /bin/vmx /unlocker/bin/
-cp /bin/vmx-debug /unlocker/bin/
-cp /bin/vmx-stats /unlocker/bin/
-
-# Setup symlink from /bin
-logger -t unlocker Setup vmx sym links
-rm -fv /bin/vmx
-ln -s /unlocker/bin/vmx /bin/vmx
-rm -fv /bin/vmx-debug
-ln -s /unlocker/bin/vmx-debug /bin/vmx-debug
-rm -fv /bin/vmx-stats
-ln -s /unlocker/bin/vmx-stats /bin/vmx-stats
-
-# Copy the libvmkctl.so files
-logger -t unlocker Copying 32-bit lib files
-mkdir /unlocker/lib
-cp /lib/libvmkctl.so /unlocker/lib/
-logger -t unlocker Setup 32-bit lib sym links
-rm -fv /lib/libvmkctl.so
-ln -s /unlocker/lib/libvmkctl.so /lib/libvmkctl.so
-if [ -f /lib64/libvmkctl.so ]; then
-    logger -t unlocker Copying 64-bit lib files
-    mkdir /unlocker/lib64
-    cp /lib64/libvmkctl.so /unlocker/lib64/
-    logger -t unlocker Setup 64-bit lib sym links
-    rm -fv /lib64/libvmkctl.so
-    ln -s /unlocker/lib64/libvmkctl.so /lib64/libvmkctl.so
-fi
-
-# Patch the vmx files
-logger -t unlocker Patching vmx files
-python <<END
 #!/usr/bin/env python
 """
 The MIT License (MIT)
 
-Copyright (c) 2014-2016 Dave Parsons & Sam Bingner
+Copyright (c) 2014-2018 Dave Parsons & Sam Bingner
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the 'Software'), to deal
@@ -109,18 +44,14 @@ Offset  Length  Struct Type Description
 from __future__ import print_function
 import codecs
 import os
-import sys
+import shutil
 import struct
 import subprocess
+import sys
 
 if sys.version_info < (2, 7):
     sys.stderr.write('You need Python 2.7 or later\n')
     sys.exit(1)
-
-# Setup imports depending on whether IronPython or CPython
-if sys.platform == 'win32' \
-        or sys.platform == 'cli':
-    from _winreg import *
 
 
 def bytetohex(data):
@@ -295,7 +226,7 @@ def patchsmc(name, sharedobj):
         # Read file into string variable
         vmx = f.read()
 
-        print('File: ' + name)
+        print('File: ' + name + '\n')
 
         # Setup hex string for vSMC headers
         # These are the private and public key counts
@@ -360,46 +291,6 @@ def patchsmc(name, sharedobj):
         f.close()
 
 
-def patchbase(name):
-    # Patch file
-    print('GOS Patching: ' + name)
-    f = open(name, 'r+b')
-
-    # Entry to search for in GOS table
-    # Should work for 12 & 14 of Workstation...
-    darwin = (
-        '\x10\x00\x00\x00\x10\x00\x00\x00'
-        '\x02\x00\x00\x00\x00\x00\x00\x00'
-        '\x00\x00\x00\x00\x00\x00\x00\x00'
-        '\x00\x00\x00\x00\x00\x00\x00\x00'
-    )
-
-    # Read file into string variable
-    base = f.read()
-
-    # Loop through each entry and set top bit
-    # 0xBE --> 0xBF (WKS 12)
-    # 0x3E --> 0x3F (WKS 14)
-    offset = 0
-    while offset < len(base):
-        offset = base.find(darwin, offset)
-        if offset == -1:
-            break
-        f.seek(offset + 32)
-        flag = ord(f.read(1))
-        flag = set_bit(flag, 0)
-        flag = chr(flag)
-        f.seek(offset + 32)
-        f.write(flag)
-        print('GOS Patched flag @: ' + hex(offset))
-        offset += 40
-
-    # Tidy up
-    f.flush()
-    f.close()
-    print('GOS Patched: ' + name)
-
-
 def patchvmkctl(name):
     # Patch file
     print('smcPresent Patching: ' + name)
@@ -418,84 +309,76 @@ def patchvmkctl(name):
 
 
 def main():
-    # Work around absent Platform module on VMkernel
-    if os.name == 'nt' or os.name == 'cli':
-        osname = 'windows'
-    else:
-        osname = os.uname()[0].lower()
 
-    vmwarebase = ''
-    libvmkctl32 = ''
-    libvmkctl64 = ''
-    vmx_so = False
+    # Stop the hostd service
+    subprocess.call('/etc/init.d/hostd stop', shell=True)
 
-    # Setup default paths
-    if osname == 'darwin':
-        vmx_path = '/Applications/VMware Fusion.app/Contents/Library/'
-        vmx = joinpath(vmx_path, 'vmware-vmx')
-        vmx_debug = joinpath(vmx_path, 'vmware-vmx-debug')
-        vmx_stats = joinpath(vmx_path, 'vmware-vmx-stats')
+    # Current folder
+    currdir = os.getcwd()
 
-    elif osname == 'linux':
-        vmx_path = '/usr/lib/vmware/bin/'
-        vmx = joinpath(vmx_path, 'vmware-vmx')
-        vmx_debug = joinpath(vmx_path, 'vmware-vmx-debug')
-        vmx_stats = joinpath(vmx_path, 'vmware-vmx-stats')
-        if os.path.isfile('/usr/lib/vmware/lib/libvmwarebase.so/libvmwarebase.so'):
-            vmx_so = True
-            vmwarebase = '/usr/lib/vmware/lib/libvmwarebase.so/libvmwarebase.so'
-        else:
-            vmwarebase = '/usr/lib/vmware/lib/libvmwarebase.so.0/libvmwarebase.so.0'
+    # Source files
+    srcvmx = '/bin/vmx'
+    srclib32 = '/lib/libvmkctl.so'
+    srclib64 = '/lib64/libvmkctl.so'
 
-    elif osname == 'vmkernel':
-        vmx_path = os.path.dirname(os.path.abspath(__file__))
-        vmx = joinpath(vmx_path, '/unlocker/bin/vmx')
-        vmx_debug = joinpath(vmx_path, '/unlocker/bin/vmx-debug')
-        vmx_stats = joinpath(vmx_path, '/unlocker/bin/vmx-stats')
-        vmx_so = True
-        libvmkctl32 = joinpath(vmx_path, '/unlocker/lib/libvmkctl.so')
-        libvmkctl64 = joinpath(vmx_path, '/unlocker/lib64/libvmkctl.so')
+    # Destination files cuurently tmp but may use scratch
+    basefolder = '/tmp/'
+    destfolder = joinpath(basefolder, 'unlocker')
+    destvmx = joinpath(destfolder,'bin/vmx')
+    destlib32 = joinpath(destfolder,'lib/libvmkctl.so')
+    destlib64 = joinpath(destfolder,'lib64/libvmkctl.so')
 
-    elif osname == 'windows':
-        reg = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
-        key = OpenKey(reg, r'SOFTWARE\Wow6432Node\VMware, Inc.\VMware Workstation')
-        vmwarebase_path = QueryValueEx(key, 'InstallPath')[0]
-        vmx_path = QueryValueEx(key, 'InstallPath64')[0]
-        vmx = joinpath(vmx_path, 'vmware-vmx.exe')
-        vmx_debug = joinpath(vmx_path, 'vmware-vmx-debug.exe')
-        vmx_stats = joinpath(vmx_path, 'vmware-vmx-stats.exe')
-        vmwarebase = joinpath(vmwarebase_path, 'vmwarebase.dll')
+    # Work files to create vmtardisk
+    # filetgz = joinpath(destfolder, 'custom.tgz')
+    # filevmtar = joinpath(destfolder, 'custom.vmtar')
+    # filevgz = joinpath(destfolder, 'custom.vgz')
 
-    else:
-        print('Unknown Operating System: ' + osname)
-        return
+    # Remove files & folder if they exist
+    if os.path.isdir(destfolder):
+        shutil.rmtree(destfolder, True)
 
-    # Patch the vmx executables skipping stats version for Player
-    patchsmc(vmx, vmx_so)
-    patchsmc(vmx_debug, vmx_so)
-    if os.path.isfile(vmx_stats):
-        patchsmc(vmx_stats, vmx_so)
+    # Create the base folder
+    os.makedirs(destfolder)
+    os.chdir(destfolder)
 
-    # Patch vmwarebase for Workstation and Player
-    # Not required on Fusion or ESXi as table already has correct flags
-    if vmwarebase != '':
-        patchbase(vmwarebase)
-    else:
-        print('Patching vmwarebase is not required on this system')
+    # Patch the vmx executable
+    os.makedirs(joinpath(destfolder, 'bin'))
+    shutil.copy2(srcvmx, destvmx)
+    patchsmc(destvmx, True)
 
-    # Now using sed in the local.sh script
-    if osname == 'vmkernel':
-        # Patch ESXi 6.0 and 6.5 32 bit .so
-        patchvmkctl(libvmkctl32)
+    # Patch 32-bit libvmkctl to return Apple SMC present
+    os.makedirs(joinpath(destfolder, 'lib'))
+    shutil.copy2(srclib32, destlib32)
+    patchvmkctl(destlib32)
 
-        # Patch ESXi 6.5 64 bit .so
-        if os.path.isfile(libvmkctl64):
-            patchvmkctl(libvmkctl64)
+    # Patch 64-bit libvmkctl to return Apple SMC present
+    if os.path.isfile(srclib64):
+        os.makedirs(joinpath(destfolder, 'lib64'))
+        shutil.copy2(srclib64, destlib64)
+        patchvmkctl(destlib64)
+
+    # Build the gzipped tar file custom.tgz
+    print('\nCreating custom.tgz...')
+    subprocess.call('/bin/tar czvf custom.tgz bin lib lib64', shell=True)
+
+    # Build the vmtar file custom.vmtar
+    print('\nCreating custom.vmtar...')
+    subprocess.call('/bin/vmtar -v -c custom.tgz -o custom.vmtar', shell=True)
+
+    # Build the gzipped vmtar file custom.vgz
+    print('\nCreating custom.vgz...')
+    subprocess.call('/bin/gzip < custom.vmtar > custom.vgz', shell=True)
+    subprocess.call('/bin/vmtar -v -t < custom.vgz', shell=True)
+
+    # Load the tardisk
+    subprocess.call('vmkramdisk custom.vgz', shell=True)
+
+    # Return to script folder
+    os.chdir(currdir)
+
+    # Start the hostd service
+    subprocess.call('/etc/init.d/hostd start', shell=True)
 
 
 if __name__ == '__main__':
     main()
-END
-logger -t unlocker Starting hostd daemon
-/etc/init.d/hostd start
-exit 0
