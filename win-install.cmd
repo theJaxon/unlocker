@@ -4,6 +4,9 @@ echo VMware Unlocker 2.1.1
 echo ========================
 echo (c) Dave Parsons 2011-17
 
+echo Set encoding parameters...
+chcp 850
+
 net session >NUL 2>&1
 if %errorlevel% neq 0 (
     echo Administrator privileges required! 
