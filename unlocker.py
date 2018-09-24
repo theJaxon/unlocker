@@ -44,9 +44,7 @@ Offset  Length  Struct Type Description
 from __future__ import print_function
 import codecs
 import os
-import six
 import struct
-import subprocess
 import sys
 
 if sys.version_info < (2, 7):
@@ -56,6 +54,7 @@ if sys.version_info < (2, 7):
 # Setup imports depending on whether IronPython or CPython
 if sys.platform == 'win32' \
         or sys.platform == 'cli':
+    # noinspection PyUnresolvedReferences
     from _winreg import *
 
 
@@ -349,6 +348,7 @@ def patchvmkctl(name):
     print('smcPresent Patched: ' + name)
 
 
+# noinspection PyUnresolvedReferences
 def main():
     # Work around absent Platform module on VMkernel
     if os.name == 'nt' or os.name == 'cli':
@@ -356,19 +356,11 @@ def main():
     else:
         osname = os.uname()[0].lower()
 
-    vmwarebase = ''
-    libvmkctl32 = ''
-    libvmkctl64 = ''
+    # vmwarebase = ''
     vmx_so = False
 
     # Setup default paths
-    if osname == 'darwin':
-        vmx_path = '/Applications/VMware Fusion.app/Contents/Library/'
-        vmx = joinpath(vmx_path, 'vmware-vmx')
-        vmx_debug = joinpath(vmx_path, 'vmware-vmx-debug')
-        vmx_stats = joinpath(vmx_path, 'vmware-vmx-stats')
-
-    elif osname == 'linux':
+    if osname == 'linux':
         vmx_path = '/usr/lib/vmware/bin/'
         vmx = joinpath(vmx_path, 'vmware-vmx')
         vmx_debug = joinpath(vmx_path, 'vmware-vmx-debug')
@@ -378,15 +370,6 @@ def main():
             vmwarebase = '/usr/lib/vmware/lib/libvmwarebase.so/libvmwarebase.so'
         else:
             vmwarebase = '/usr/lib/vmware/lib/libvmwarebase.so.0/libvmwarebase.so.0'
-
-    elif osname == 'vmkernel':
-        vmx_path = os.path.dirname(os.path.abspath(__file__))
-        vmx = joinpath(vmx_path, '/unlocker/bin/vmx')
-        vmx_debug = joinpath(vmx_path, '/unlocker/bin/vmx-debug')
-        vmx_stats = joinpath(vmx_path, '/unlocker/bin/vmx-stats')
-        vmx_so = True
-        libvmkctl32 = joinpath(vmx_path, '/unlocker/lib/libvmkctl.so')
-        libvmkctl64 = joinpath(vmx_path, '/unlocker/lib64/libvmkctl.so')
 
     elif osname == 'windows':
         reg = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
@@ -409,20 +392,7 @@ def main():
         patchsmc(vmx_stats, vmx_so)
 
     # Patch vmwarebase for Workstation and Player
-    # Not required on Fusion or ESXi as table already has correct flags
-    if vmwarebase != '':
-        patchbase(vmwarebase)
-    else:
-        pass
-
-    # Patch libvmkctl to return Apple SMC present
-    if osname == 'vmkernel':
-        # Patch ESXi 6.0 and 6.5 32 bit .so
-        patchvmkctl(libvmkctl32)
-
-        # Patch ESXi 6.5 64 bit .so
-        if os.path.isfile(libvmkctl64):
-            patchvmkctl(libvmkctl64)
+    patchbase(vmwarebase)
 
 
 if __name__ == '__main__':

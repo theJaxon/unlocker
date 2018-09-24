@@ -6,3 +6,5 @@ tests/
 build/
 dist/
 *.spec
+*.pyc
+
