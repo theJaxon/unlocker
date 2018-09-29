@@ -1,20 +1,19 @@
-macOS Unlocker for VMware V3.0
-==============================
+macOS Unlocker for VMware Workstation V3.0
+==========================================
 
 +-----------------------------------------------------------------------------+
 | IMPORTANT:                                                                  |
 | ==========                                                                  |
 |                                                                             |
 | Always uninstall the previous version of the Unlocker before using a new    |
-| version. Failure to do this could render VMware unusable.                  |
+| version. Failure to do this could render VMware unusable.                   |
 |                                                                             |
 +-----------------------------------------------------------------------------+
 
 1. Introduction
 ---------------
 
-Unlocker 3 is designed for Workstation 11/12/14/15, Player 7/12/14/15,
-and Fusion 7/8/10.
+Unlocker 3 is designed for VMware Workstation 11-15 and Player 7-15.
 
 If you are using an earlier product please continue using Unlocker 1.
 
@@ -36,7 +35,7 @@ You will have to manually mount the darwin.iso for example on Workstation 11 and
 In all cases make sure VMware is not running, and any background guests have
 been shutdown.
 
-The code is written in Python as it makes the Unlocker easier to run and maintain on ESXi.
+The code is written in Python.
 
 2. Prerequisites
 ----------------
@@ -87,7 +86,7 @@ lnx-install.sh   - patches VMware
 lnx-uninstall.sh - restores VMware
 lnx-update-tools.cmd - retrieves latest macOS guest tools
    
-7. Thanks
+6. Thanks
 ---------
 
 Thanks to Zenith432 for originally building the C++ unlocker and Mac Son of Knife
@@ -100,7 +99,7 @@ modified the unlocker code to run on Python 3 in the ESXi 6.5 environment.
 
 History
 -------
-10/10/17 2.1.0 - First release
+27/09/18 3.0.0 - First release
 
 
 (c) 2011-2018 Dave Parsons

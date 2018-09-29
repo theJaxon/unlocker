@@ -7,4 +7,4 @@ build/
 dist/
 *.spec
 *.pyc
-
+*.exe
