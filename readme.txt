@@ -1,4 +1,4 @@
-macOS Unlocker for VMware Workstation V3.0
+macOS Unlocker V3.0 for VMware Workstation
 ==========================================
 
 +-----------------------------------------------------------------------------+
