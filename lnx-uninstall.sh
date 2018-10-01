@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
 
-echo Unlocker 3.0.0 for VMware Workstation
-echo =====================================
-echo (C) Dave Parsons 2011-18
+echo "Unlocker 3.0.0 for VMware Workstation"
+echo "====================================="
+echo "(c) Dave Parsons 2011-18"
 
 # Ensure we only use unmodified commands
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin

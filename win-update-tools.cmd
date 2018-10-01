@@ -2,7 +2,7 @@
 setlocal ENABLEEXTENSIONS
 echo Get macOS VMware Tools 3.0.0
 echo ===============================
-echo Copyright: Dave Parsons 2015-18
+echo (c) Dave Parsons 2011-18
 
 net session >NUL 2>&1
 if %errorlevel% neq 0 (

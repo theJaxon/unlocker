@@ -2,7 +2,7 @@
 setlocal ENABLEEXTENSIONS
 echo Unlocker 3.0.0 for VMware Workstation
 echo =====================================
-echo Copyright: Dave Parsons 2011-18
+echo (c) Dave Parsons 2011-18
 
 net session >NUL 2>&1
 if %errorlevel% neq 0 (
