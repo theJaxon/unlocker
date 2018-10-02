@@ -84,7 +84,7 @@ by running chmod +x against the 2 files.
 
 lnx-install.sh   - patches VMware
 lnx-uninstall.sh - restores VMware
-lnx-update-tools.cmd - retrieves latest macOS guest tools
+lnx-update-tools.sh - retrieves latest macOS guest tools
    
 6. Thanks
 ---------
