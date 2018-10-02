@@ -26,18 +26,26 @@ THE SOFTWARE.
 from __future__ import print_function
 import os
 import sys
-import urllib
-try:
-    # For Python 3.0 and later
-    from urllib.request import urlopen
-    from html.parser import HTMLParser
-except ImportError:
-    # Fall back to Python 2
-    from urllib2 import urlopen
-    from HTMLParser import HTMLParser
 import shutil
 import tarfile
 import zipfile
+
+try:
+    # For Python 3.0 and later
+    # noinspection PyCompatibility
+    from urllib.request import urlopen
+    # noinspection PyCompatibility
+    from html.parser import HTMLParser
+    # noinspection PyCompatibility
+    from urllib.request import urlretrieve
+except ImportError:
+    # Fall back to Python 2
+    # noinspection PyCompatibility
+    from urllib2 import urlopen
+    # noinspection PyCompatibility
+    from HTMLParser import HTMLParser
+    # noinspection PyCompatibility
+    from urllib import urlretrieve
 
 
 # Parse the Fusion directory page
@@ -50,7 +58,7 @@ class CDSParser(HTMLParser):
 
     def handle_data(self, data):
         # Build a list of numeric data from any element
-        if data.find("\n") == -1 :
+        if data.find("\n") == -1:
             if data[0].isdigit():
                 self.HTMLDATA.append(data)
                 self.HTMLDATA.sort(key=lambda s: [int(u) for u in s.split('.')])
@@ -65,7 +73,6 @@ def convertpath(path):
 
 
 def main():
-
     # Check minimal Python version is 2.7
     if sys.version_info < (2, 7):
         sys.stderr.write('You need Python 2.7 or later\n')
@@ -84,7 +91,7 @@ def main():
     response = urlopen(url)
     html = response.read()
     parser = CDSParser()
-    parser.feed(html)
+    parser.feed(str(html))
     url = url + parser.HTMLDATA[-1] + '/'
     parser.clean()
 
@@ -92,13 +99,14 @@ def main():
     # And build file URL
     response = urlopen(url)
     html = response.read()
-    parser.feed(html)
-    url = url + parser.HTMLDATA[-1] + '/packages/com.vmware.fusion.tools.darwin.zip.tar'
+    parser.feed(str(html))
+    urlpost15 = url + parser.HTMLDATA[-1] + '/packages/com.vmware.fusion.tools.darwin.zip.tar'
+    urlpre15 = url + parser.HTMLDATA[-1] + '/packages/com.vmware.fusion.tools.darwinPre15.zip.tar'
     parser.clean()
 
     # Download the darwin.iso tgz file
-    print('Retrieving Darwin tools from: ' + url)
-    urllib.urlretrieve(url, convertpath(dest + '/tools/com.vmware.fusion.tools.darwin.zip.tar'))
+    print('Retrieving Darwin tools from: ' + urlpost15)
+    urlretrieve(urlpost15, convertpath(dest + '/tools/com.vmware.fusion.tools.darwin.zip.tar'))
 
     # Extract the tar to zip
     tar = tarfile.open(convertpath(dest + '/tools/com.vmware.fusion.tools.darwin.zip.tar'), 'r')
@@ -121,30 +129,30 @@ def main():
     os.remove(convertpath(dest + '/tools/com.vmware.fusion.tools.darwin.zip'))
 
     # Download the darwinPre15.iso tgz file
-    print('Retrieving DarwinPre15 tools from: ' + url)
-    urllib.urlretrieve(url, convertpath(dest + '/tools/com.vmware.fusion.tools.darwinPre15.zip.tar'))
+    print('Retrieving DarwinPre15 tools from: ' + urlpre15)
+    urlretrieve(urlpre15, convertpath(dest + '/tools/com.vmware.fusion.tools.darwinPre15.zip.tar'))
 
     # Extract the tar to zip
     tar = tarfile.open(convertpath(dest + '/tools/com.vmware.fusion.tools.darwinPre15.zip.tar'), 'r')
-    tar.extract('com.vmware.fusion.tools.darwin.zip', path=convertpath(dest + '/tools/'))
+    tar.extract('com.vmware.fusion.tools.darwinPre15.zip', path=convertpath(dest + '/tools/'))
     tar.close()
 
     # Extract the iso and sig files from zip
-    cdszip = zipfile.ZipFile(convertpath(dest + '/tools/com.vmware.fusion.tools.darwin.zip'), 'r')
-    cdszip.extract('payload/darwin.iso', path=convertpath(dest + '/tools/'))
-    cdszip.extract('payload/darwin.iso.sig', path=convertpath(dest + '/tools/'))
+    cdszip = zipfile.ZipFile(convertpath(dest + '/tools/com.vmware.fusion.tools.darwinPre15.zip'), 'r')
+    cdszip.extract('payload/darwinPre15.iso', path=convertpath(dest + '/tools/'))
+    cdszip.extract('payload/darwinPre15.iso.sig', path=convertpath(dest + '/tools/'))
     cdszip.close()
 
     # Move the iso and sig files to tools folder
-    shutil.move(convertpath(dest + '/tools/payload/darwin.iso'),
+    shutil.move(convertpath(dest + '/tools/payload/darwinPre15.iso'),
                 convertpath(dest + '/tools/darwinPre15.iso'))
-    shutil.move(convertpath(dest + '/tools/payload/darwin.iso.sig'),
+    shutil.move(convertpath(dest + '/tools/payload/darwinPre15.iso.sig'),
                 convertpath(dest + '/tools/darwinPre15.iso.sig'))
 
     # Cleanup working files and folders
     shutil.rmtree(convertpath(dest + '/tools/payload'), True)
     os.remove(convertpath(dest + '/tools/com.vmware.fusion.tools.darwinPre15.zip.tar'))
-    os.remove(convertpath(dest + '/tools/com.vmware.fusion.tools.darwin.zip'))
+    os.remove(convertpath(dest + '/tools/com.vmware.fusion.tools.darwinPre15.zip'))
 
 
 if __name__ == '__main__':
