@@ -100,6 +100,7 @@ modified the unlocker code to run on Python 3 in the ESXi 6.5 environment.
 History
 -------
 27/09/18 3.0.0 - First release
+02/10/18 3.0.1 - Fixed gettools.py to work with Python 3 and correctly download darwinPre15.iso
 
 
 (c) 2011-2018 Dave Parsons
