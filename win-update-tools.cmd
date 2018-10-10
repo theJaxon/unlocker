@@ -1,6 +1,6 @@
 @echo off
 setlocal ENABLEEXTENSIONS
-echo Get macOS VMware Tools 3.0.0
+echo Get macOS VMware Tools 3.0.2
 echo ===============================
 echo (c) Dave Parsons 2011-18
 
