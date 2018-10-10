@@ -101,6 +101,8 @@ History
 -------
 27/09/18 3.0.0 - First release
 02/10/18 3.0.1 - Fixed gettools.py to work with Python 3 and correctly download darwinPre15.iso
+10/10/18 3.0.2 - Fixed false positives from anti-virus software with Windows executables
+               - Allow Python 2 and 3 to run the Python code from Bash scripts
 
 
 (c) 2011-2018 Dave Parsons
