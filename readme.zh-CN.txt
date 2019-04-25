@@ -1,105 +1,105 @@
-ÓÃÓÚ VMware Workstation µÄ macOS Unlocker V3.0
+ç”¨äºŽ VMware Workstation çš„ macOS Unlocker V3.0
 ==============================================
 
 +-----------------------------------------------------------------------------+
-| ÖØÒªÌáÐÑ£º                                                                  |
+| é‡è¦æé†’ï¼š                                                                    |
 | =========                                                                   |
 |                                                                             |
-| ÇëÔÚÊ¹ÓÃÐÂ°æ±¾ Unlocker Ç°Ð¶ÔØ¾É°æ±¾,·ñÔò VMWare ¿ÉÄÜ»áÎÞ·¨Ê¹ÓÃ¡£           |
+| è¯·åœ¨ä½¿ç”¨æ–°ç‰ˆæœ¬ Unlocker å‰å¸è½½æ—§ç‰ˆæœ¬,å¦åˆ™ VMWare å¯èƒ½ä¼šæ— æ³•ä½¿ç”¨ã€‚                  |
 |                                                                             |
 |                                                                             |
 +-----------------------------------------------------------------------------+
 
-1. ½éÉÜ
+1. ä»‹ç»
 -------
 
-Unlocker 3 ÊÊÓÃÓÚ VMware Workstation 11-15 ÒÔ¼° Player 7-15¡£
+Unlocker 3 é€‚ç”¨äºŽ VMware Workstation 11-15 ä»¥åŠ Player 7-15ã€‚
 
-Èç¹ûÄúÕýÊ¹ÓÃÔçÆÚ°æ±¾µÄ VMWare£¬Çë¼ÌÐøÊ¹ÓÃ Unlocker 1¡£
+å¦‚æžœæ‚¨æ­£ä½¿ç”¨æ—©æœŸç‰ˆæœ¬çš„ VMWareï¼Œè¯·ç»§ç»­ä½¿ç”¨ Unlocker 1ã€‚
 
-Unlocker 3 ÒÑ¶ÔÒÔÏÂÇé¿ö½øÐÐÁË²âÊÔ£º
+Unlocker 3 å·²å¯¹ä»¥ä¸‹æƒ…å†µè¿›è¡Œäº†æµ‹è¯•ï¼š
 
-* ÔÚ Windows »ò Linux ÉÏµÄ Workstation 11/12/14/15
-* ÔÚ Windows »ò Linux ÉÏµÄ Workstation Player 7/12/14/15
+* åœ¨ Windows æˆ– Linux ä¸Šçš„ Workstation 11/12/14/15
+* åœ¨ Windows æˆ– Linux ä¸Šçš„ Workstation Player 7/12/14/15
 
-¸ù¾ÝËùÐÞ²¹µÄ²úÆ·£¬±¾´úÂë»á×÷³öÒÔÏÂÐÞ¸Ä£º
+æ ¹æ®æ‰€ä¿®è¡¥çš„äº§å“ï¼Œæœ¬ä»£ç ä¼šä½œå‡ºä»¥ä¸‹ä¿®æ”¹ï¼š
 
-* ÐÞ²¹ vmware-vmx ¼°ÆäÏà¹Ø×é¼þ£¬ÒÔÔÊÐí Mac OS Æô¶¯¡£
-* ÐÞ²¹ vmwarebase .dll »ò .so£¬ÒÔÔÊÐí´´½¨ÐéÄâ»ú¹ý³ÌÖÐÑ¡Ôñ Apple ×÷Îª¿Í»§»ú²Ù×÷ÏµÍ³¡£
-* ÏÂÔØÒ»·Ý×îÐÂµÄÓÃÓÚ Mac OS µÄ VMWare Tools ¸±±¾¡£
+* ä¿®è¡¥ vmware-vmx åŠå…¶ç›¸å…³ç»„ä»¶ï¼Œä»¥å…è®¸ Mac OS å¯åŠ¨ã€‚
+* ä¿®è¡¥ vmwarebase .dll æˆ– .soï¼Œä»¥å…è®¸åˆ›å»ºè™šæ‹Ÿæœºè¿‡ç¨‹ä¸­é€‰æ‹© Apple ä½œä¸ºå®¢æˆ·æœºæ“ä½œç³»ç»Ÿã€‚
+* ä¸‹è½½ä¸€ä»½æœ€æ–°çš„ç”¨äºŽ Mac OS çš„ VMWare Tools å‰¯æœ¬ã€‚
 
-Çë×¢Òâ£¬²¢·ÇËùÓÐµÄ VMWare °æ±¾¶¼ÄÜÍ¨¹ý¡°°²×° VMWare Tools¡±²Ëµ¥ÏîÊ¶±ð darwin.iso¡£
-ÀýÈç£¬ÔÚ Workstation 11¡¢Player 7ÉÏ£¬ÄúÐèÒªÊÖ¶¯¹ÒÔØ darwin.iso¡£
+è¯·æ³¨æ„ï¼Œå¹¶éžæ‰€æœ‰çš„ VMWare ç‰ˆæœ¬éƒ½èƒ½é€šè¿‡â€œå®‰è£… VMWare Toolsâ€èœå•é¡¹è¯†åˆ« darwin.isoã€‚
+ä¾‹å¦‚ï¼Œåœ¨ Workstation 11ã€Player 7ä¸Šï¼Œæ‚¨éœ€è¦æ‰‹åŠ¨æŒ‚è½½ darwin.isoã€‚
 
-ÎÞÂÛºÎÊ±¶¼ÇëÈ·±£ VMware Î´ÔÚÔËÐÐÇÒËùÓÐºóÌ¨µÄ¿Í»§»ú¶¼ÒÑ¹Ø±Õ¡£
+æ— è®ºä½•æ—¶éƒ½è¯·ç¡®ä¿ VMware æœªåœ¨è¿è¡Œä¸”æ‰€æœ‰åŽå°çš„å®¢æˆ·æœºéƒ½å·²å…³é—­ã€‚
 
-±¾Èí¼þµÄ´úÂëÊÇÓÃ Python ±àÐ´µÄ¡£
+æœ¬è½¯ä»¶çš„ä»£ç æ˜¯ç”¨ Python ç¼–å†™çš„ã€‚
 
-2. ÏÈ¾öÌõ¼þ
+2. å…ˆå†³æ¡ä»¶
 -----------
 
-±¾´úÂëÐèÒª Python 2.7 ÒÔÕý³£¹¤×÷¡£´ó¶àÊý Linux ·¢ÐÐ°æ¶¼¸½´øÒ»¸ö¼æÈÝµÄ Python ½âÊÍÆ÷£¬
-Òò´Ë±¾´úÂëÓ¦¿ÉÔÚ²»ÐèÒªÈÎºÎ¶îÍâÈí¼þµÄÇé¿öÏÂ¹¤×÷¡£
+æœ¬ä»£ç éœ€è¦ Python 2.7 ä»¥æ­£å¸¸å·¥ä½œã€‚å¤§å¤šæ•° Linux å‘è¡Œç‰ˆéƒ½é™„å¸¦ä¸€ä¸ªå…¼å®¹çš„ Python è§£é‡Šå™¨ï¼Œ
+å› æ­¤æœ¬ä»£ç åº”å¯åœ¨ä¸éœ€è¦ä»»ä½•é¢å¤–è½¯ä»¶çš„æƒ…å†µä¸‹å·¥ä½œã€‚
 
-Windows °æ±¾µÄ Unlocker ÓÐÒ»¸öÊ¹ÓÃ PyInstaller µÄ´ò°ü°æ Python ½Å±¾£¬Òò´ËÎÞÐèÔÚ¼ÆËã»ú
-ÉÏ°²×° Python¡£
+Windows ç‰ˆæœ¬çš„ Unlocker æœ‰ä¸€ä¸ªä½¿ç”¨ PyInstaller çš„æ‰“åŒ…ç‰ˆ Python è„šæœ¬ï¼Œå› æ­¤æ— éœ€åœ¨è®¡ç®—æœº
+ä¸Šå®‰è£… Pythonã€‚
 
-3. ÏÞÖÆ
+3. é™åˆ¶
 -------
 
-Èç¹ûÄúÊ¹ÓÃµÄÊÇÓÃÓÚ Windows µÄ VMware Player »ò Workstation£¬Äú¿ÉÄÜ»áµÃµ½Ò»¸öºËÐÄ×ª´¢ÎÄ¼þ¡£
+å¦‚æžœæ‚¨ä½¿ç”¨çš„æ˜¯ç”¨äºŽ Windows çš„ VMware Player æˆ– Workstationï¼Œæ‚¨å¯èƒ½ä¼šå¾—åˆ°ä¸€ä¸ªæ ¸å¿ƒè½¬å‚¨æ–‡ä»¶ã€‚
 
-×îÐÂµÄ Linux °æ±¾ VMWare Ôò²»»á³öÏÖ´ËÎÊÌâ¡£
+æœ€æ–°çš„ Linux ç‰ˆæœ¬ VMWare åˆ™ä¸ä¼šå‡ºçŽ°æ­¤é—®é¢˜ã€‚
 
 +-----------------------------------------------------------------------------+
-| ÖØÒªÌáÐÑ£º                                                                  |
+| é‡è¦æé†’ï¼š                                                                   |
 | =========                                                                   |
 |                                                                             |
-| Èç¹ûÄú´´½¨Ò»¸öÐÂµÄÐéÄâ»ú£¬VMware ¿ÉÄÜ»áÍ£Ö¹¹¤×÷²¢´´½¨Ò»¸öºËÐÄ×ª´¢ÎÄ¼þ¡£     |
-| ÓÐÁ½ÖÖ·½·¨¿ÉÒÔ½â¾öÕâ¸öÎÊÌâ£º                                                |
+| å¦‚æžœæ‚¨åˆ›å»ºä¸€ä¸ªæ–°çš„è™šæ‹Ÿæœºï¼ŒVMware å¯èƒ½ä¼šåœæ­¢å·¥ä½œå¹¶åˆ›å»ºä¸€ä¸ªæ ¸å¿ƒè½¬å‚¨æ–‡ä»¶ã€‚              |
+| æœ‰ä¸¤ç§æ–¹æ³•å¯ä»¥è§£å†³è¿™ä¸ªé—®é¢˜ï¼š                                                    |
 |                                                                             |
-| 1. ½«ÐéÄâ»úµÄÓ²¼þ¼æÈÝÐÔÉèÖÃÎª Workstation 10 - Õâ²»»áÓ°ÏìÐÔÄÜ¡£             |
-| 2. ±à¼­ VMX ÎÄ¼þ²¢Ìí¼Ó£º                                                    |
+| 1. å°†è™šæ‹Ÿæœºçš„ç¡¬ä»¶å…¼å®¹æ€§è®¾ç½®ä¸º Workstation 10 - è¿™ä¸ä¼šå½±å“æ€§èƒ½ã€‚                   |
+| 2. ç¼–è¾‘ VMX æ–‡ä»¶å¹¶æ·»åŠ ï¼š                                                      |
 |    smc.version = "0"                                                        |
 |                                                                             |
 +-----------------------------------------------------------------------------+
 
 4. Windows
 ----------
-ÔÚ Windows ÏÂ£¬Äú¿ÉÒÔÍ¨¹ýÒÔ¹ÜÀíÔ±Éí·ÝÔËÐÐ cmd.exe ÔÙÔÚÆäÖÐÔËÐÐ½Å±¾£¬»òÔÚ×ÊÔ´¹ÜÀí
-Æ÷ÀïÓÒ»÷½Å±¾²¢Ñ¡Ôñ¡°ÒÔ¹ÜÀíÔ±Éí·ÝÔËÐÐ¡±¡£
+åœ¨ Windows ä¸‹ï¼Œæ‚¨å¯ä»¥é€šè¿‡ä»¥ç®¡ç†å‘˜èº«ä»½è¿è¡Œ cmd.exe å†åœ¨å…¶ä¸­è¿è¡Œè„šæœ¬ï¼Œæˆ–åœ¨èµ„æºç®¡ç†
+å™¨é‡Œå³å‡»è„šæœ¬å¹¶é€‰æ‹©â€œä»¥ç®¡ç†å‘˜èº«ä»½è¿è¡Œâ€ã€‚
 
-win-install.cmd   - ÐÞ²¹ VMware
-win-uninstall.cmd - »¹Ô­ VMware
-win-update-tools.cmd - ¼ìË÷×îÐÂµÄÓÃÓÚ Mac OS µÄ VMWare Tools
+win-install.cmd   - ä¿®è¡¥ VMware
+win-uninstall.cmd - è¿˜åŽŸ VMware
+win-update-tools.cmd - æ£€ç´¢æœ€æ–°çš„ç”¨äºŽ Mac OS çš„ VMWare Tools
 
 5. Linux
 --------
-ÔÚ Linux ÏÂ£¬ÄúÐèÒªÊÇ root ÓÃ»§£¬»òÊ¹ÓÃ sudo ÔËÐÐ½Å±¾¡£
+åœ¨ Linux ä¸‹ï¼Œæ‚¨éœ€è¦æ˜¯ root ç”¨æˆ·ï¼Œæˆ–ä½¿ç”¨ sudo è¿è¡Œè„šæœ¬ã€‚
 
-Äú¿ÉÄÜÐèÒªÍ¨¹ý¶ÔÏÂÃæÈý¸ö½Å±¾ÖÐµÄÇ°Á½¸öÔËÐÐ chmod +x À´È·±£ËüÃÇ¾ßÓÐÖ´ÐÐÈ¨ÏÞ¡£
+æ‚¨å¯èƒ½éœ€è¦é€šè¿‡å¯¹ä¸‹é¢ä¸‰ä¸ªè„šæœ¬ä¸­çš„å‰ä¸¤ä¸ªè¿è¡Œ chmod +x æ¥ç¡®ä¿å®ƒä»¬å…·æœ‰æ‰§è¡Œæƒé™ã€‚
 
-lnx-install.sh   - ÐÞ²¹ VMware
-lnx-uninstall.sh - »¹Ô­ VMware
-lnx-update-tools.sh - ¼ìË÷×îÐÂµÄÓÃÓÚ Mac OS µÄ VMWare Tools
+lnx-install.sh   - ä¿®è¡¥ VMware
+lnx-uninstall.sh - è¿˜åŽŸ VMware
+lnx-update-tools.sh - æ£€ç´¢æœ€æ–°çš„ç”¨äºŽ Mac OS çš„ VMWare Tools
    
-6. ÖÂÐ»
+6. è‡´è°¢
 -------
 
-¸ÐÐ» Zenith432 ×î³õ¹¹½¨ÁË C++ °æ±¾µÄ Unlocker£¬»¹Òª¸ÐÐ» Mac Son of Knife£¨MSoK£©
-µÄËùÓÐ²âÊÔÓëÖ§³Ö¡£
+æ„Ÿè°¢ Zenith432 æœ€åˆæž„å»ºäº† C++ ç‰ˆæœ¬çš„ Unlockerï¼Œè¿˜è¦æ„Ÿè°¢ Mac Son of Knifeï¼ˆMSoKï¼‰
+çš„æ‰€æœ‰æµ‹è¯•ä¸Žæ”¯æŒã€‚
 
-Í¬Ñù¸ÐÐ» Sam B ÕÒµ½ÁËÕë¶Ô ESXi 6 µÄ½â¾ö·½°¸£¬²¢°ïÎÒ½øÐÐÁË×¨ÒµµÄµ÷ÊÔ¡£Sam »¹±àÐ´ÁË
-ÐÞ²¹ ESXi ELF ÎÄ¼þµÄ´úÂë£¬²¢±à¼­ÁË Unlocker µÄ´úÂëÊ¹ÆäÄÜÔÚ ESXi 6.5 µÄ»·¾³ÏÂÔËÐÐ
-ÔÚ Python 3 ÉÏ¡£
+åŒæ ·æ„Ÿè°¢ Sam B æ‰¾åˆ°äº†é’ˆå¯¹ ESXi 6 çš„è§£å†³æ–¹æ¡ˆï¼Œå¹¶å¸®æˆ‘è¿›è¡Œäº†ä¸“ä¸šçš„è°ƒè¯•ã€‚Sam è¿˜ç¼–å†™äº†
+ä¿®è¡¥ ESXi ELF æ–‡ä»¶çš„ä»£ç ï¼Œå¹¶ç¼–è¾‘äº† Unlocker çš„ä»£ç ä½¿å…¶èƒ½åœ¨ ESXi 6.5 çš„çŽ¯å¢ƒä¸‹è¿è¡Œ
+åœ¨ Python 3 ä¸Šã€‚
 
 
-¸üÐÂÀúÊ·
+æ›´æ–°åŽ†å²
 --------
-2018/09/27 3.0.0 - Ê×¸ö·¢ÐÐ°æ
-2018/10/02 3.0.1 - ÐÞÕýÁË gettools.py Ê¹ÆäÄÜÔÚ Python 3 »·¾³ÏÂÕý³£¹¤×÷ÇÒÄÜÕýÈ·ÏÂ
-                   ÔØ darwinPre15.iso
-2018/10/10 3.0.2 - ÐÞÕýÁË´øÓÐ Windows ¿ÉÖ´ÐÐ³ÌÐòµÄÉ±¶¾Èí¼þ¶Ô±¾³ÌÐòµÄÎó±¨
-                 - ÔÊÐí Python 2 ºÍ 3 ´Ó Bash ½Å±¾ÔËÐÐ Python ´úÂë
+2018/09/27 3.0.0 - é¦–ä¸ªå‘è¡Œç‰ˆ
+2018/10/02 3.0.1 - ä¿®æ­£äº† gettools.py ä½¿å…¶èƒ½åœ¨ Python 3 çŽ¯å¢ƒä¸‹æ­£å¸¸å·¥ä½œä¸”èƒ½æ­£ç¡®ä¸‹
+                   è½½ darwinPre15.iso
+2018/10/10 3.0.2 - ä¿®æ­£äº†å¸¦æœ‰ Windows å¯æ‰§è¡Œç¨‹åºçš„æ€æ¯’è½¯ä»¶å¯¹æœ¬ç¨‹åºçš„è¯¯æŠ¥
+                 - å…è®¸ Python 2 å’Œ 3 ä»Ž Bash è„šæœ¬è¿è¡Œ Python ä»£ç 
 
 (c) 2011-2018 Dave Parsons
