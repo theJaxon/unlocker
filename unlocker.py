@@ -52,8 +52,7 @@ if sys.version_info < (2, 7):
     sys.exit(1)
 
 # Setup imports depending on whether IronPython or CPython
-if sys.platform == 'win32' \
-        or sys.platform == 'cli':
+if sys.platform in ('cli', 'win32'):
     # noinspection PyUnresolvedReferences
     from _winreg import *
 
@@ -302,8 +301,8 @@ def patchbase(name):
 
     # Entry to search for in GOS table
     # Should work for 12 & 14 of Workstation...
-    darwin = b'\x10\x00\x00\x00\x10\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00' \
-             '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+    darwin = (b'\x10\x00\x00\x00\x10\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00'
+              b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
 
     # Read file into string variable
     base = f.read()
