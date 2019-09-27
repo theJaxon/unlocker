@@ -146,6 +146,7 @@ def main():
 			urlretrieve(urlcoretar, convertpath(dest + '/tools/com.vmware.fusion.zip.tar'), reporthook)
 		except:
 			print('Couldn\'t find tools')
+			return
 			
 		print()
 		
