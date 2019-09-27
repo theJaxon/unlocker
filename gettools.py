@@ -29,6 +29,7 @@ import sys
 import shutil
 import tarfile
 import zipfile
+import time
 
 try:
     # For Python 3.0 and later
@@ -70,6 +71,20 @@ class CDSParser(HTMLParser):
 def convertpath(path):
     # OS path separator replacement funciton
     return path.replace(os.path.sep, '/')
+	
+def reporthook(count, block_size, total_size):
+	global start_time
+	if count == 0:
+		start_time = time.time()
+		return
+	duration = time.time() - start_time
+	progress_size = int(count * block_size)
+	speed = int(progress_size / (1024 * duration)) if duration>0 else 0
+	percent = min(int(count*block_size*100/total_size),100)
+	time_remaining = ((total_size - progress_size)/1024) / speed if speed > 0 else 0
+	sys.stdout.write("\r...%d%%, %d MB, %d KB/s, %d seconds remaining" %
+					(percent, progress_size / (1024 * 1024), speed, time_remaining))
+	sys.stdout.flush()
 
 def main():
 	# Check minimal Python version is 2.7
@@ -126,35 +141,36 @@ def main():
 			  ' give a look into the core.vmware.fusion.tar file')
 		urlcoretar = url + lastVersion + '/core/com.vmware.fusion.zip.tar'
 			  
+		# Get the main core file
 		try:
-			# Get the main core file
-			urlretrieve(urlcoretar, convertpath(dest + '/tools/com.vmware.fusion.zip.tar'))
-			
-			print('Extracting com.vmware.fusion.zip.tar...')
-			tar = tarfile.open(convertpath(dest + '/tools/com.vmware.fusion.zip.tar'), 'r')
-			tar.extract('com.vmware.fusion.zip', path=convertpath(dest + '/tools/'))
-			tar.close()
-			
-			print('Extracting files from com.vmware.fusion.zip...')
-			cdszip = zipfile.ZipFile(convertpath(dest + '/tools/com.vmware.fusion.zip'), 'r')
-			cdszip.extract('payload/VMware Fusion.app/Contents/Library/isoimages/darwin.iso', path=convertpath(dest + '/tools/'))
-			cdszip.extract('payload/VMware Fusion.app/Contents/Library/isoimages/darwinPre15.iso', path=convertpath(dest + '/tools/'))
-			cdszip.close()
-			
-			# Move the iso and sig files to tools folder
-			shutil.move(convertpath(dest + '/tools/payload/VMware Fusion.app/Contents/Library/isoimages/darwin.iso'), convertpath(dest + '/tools/darwin.iso'))
-			shutil.move(convertpath(dest + '/tools/payload/VMware Fusion.app/Contents/Library/isoimages/darwinPre15.iso'), convertpath(dest + '/tools/darwinPre15.iso'))
-			
-			# Cleanup working files and folders
-			shutil.rmtree(convertpath(dest + '/tools/payload'), True)
-			os.remove(convertpath(dest + '/tools/com.vmware.fusion.zip.tar'))
-			os.remove(convertpath(dest + '/tools/com.vmware.fusion.zip'))
-			
-			print('Tools retrieved successfully')
-			return
+			urlretrieve(urlcoretar, convertpath(dest + '/tools/com.vmware.fusion.zip.tar'), reporthook)
 		except:
-			print('Odds are against you. Sorry.')
-			return
+			print('Couldn\'t find tools')
+			
+		print()
+		
+		print('Extracting com.vmware.fusion.zip.tar...')
+		tar = tarfile.open(convertpath(dest + '/tools/com.vmware.fusion.zip.tar'), 'r')
+		tar.extract('com.vmware.fusion.zip', path=convertpath(dest + '/tools/'))
+		tar.close()
+		
+		print('Extracting files from com.vmware.fusion.zip...')
+		cdszip = zipfile.ZipFile(convertpath(dest + '/tools/com.vmware.fusion.zip'), 'r')
+		cdszip.extract('payload/VMware Fusion.app/Contents/Library/isoimages/darwin.iso', path=convertpath(dest + '/tools/'))
+		cdszip.extract('payload/VMware Fusion.app/Contents/Library/isoimages/darwinPre15.iso', path=convertpath(dest + '/tools/'))
+		cdszip.close()
+		
+		# Move the iso and sig files to tools folder
+		shutil.move(convertpath(dest + '/tools/payload/VMware Fusion.app/Contents/Library/isoimages/darwin.iso'), convertpath(dest + '/tools/darwin.iso'))
+		shutil.move(convertpath(dest + '/tools/payload/VMware Fusion.app/Contents/Library/isoimages/darwinPre15.iso'), convertpath(dest + '/tools/darwinPre15.iso'))
+		
+		# Cleanup working files and folders
+		shutil.rmtree(convertpath(dest + '/tools/payload'), True)
+		os.remove(convertpath(dest + '/tools/com.vmware.fusion.zip.tar'))
+		os.remove(convertpath(dest + '/tools/com.vmware.fusion.zip'))
+		
+		print('Tools retrieved successfully')
+		return
 	
 	# Tools have been found, go with the normal way
 	
