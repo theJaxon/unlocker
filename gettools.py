@@ -88,8 +88,8 @@ def reporthook(count, block_size, total_size):
 
 def main():
 	# Check minimal Python version is 2.7
-	if sys.version_info < (2, 7):
-		sys.stderr.write('You need Python 2.7 or later\n')
+	if sys.version_info < (3, 0):
+		sys.stderr.write('You need Python 3 or later\n')
 		sys.exit(1)
 
 	dest = os.path.dirname(os.path.abspath(__file__))
