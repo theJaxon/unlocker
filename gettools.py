@@ -79,7 +79,7 @@ def main():
         sys.exit(1)
 
     # Setup url and file paths
-    url = 'http://softwareupdate.vmware.com/cds/vmw-desktop/fusion/'
+    url = 'https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/'
     dest = os.path.dirname(os.path.abspath(__file__))
 
     # Re-create the tools folder
