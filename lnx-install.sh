@@ -27,7 +27,7 @@ elif [ -d /usr/lib/vmware/lib/libvmwarebase.so/ ]; then
 fi
 
 echo Patching...
-python2 ./unlocker.py
+python ./unlocker.py
 
 echo Getting VMware Tools...
 python gettools.py
