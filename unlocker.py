@@ -53,8 +53,7 @@ if sys.version_info < (2, 7):
     sys.exit(1)
 
 # Setup imports depending on whether IronPython or CPython
-if sys.platform == 'win32' \
-        or sys.platform == 'cli':
+if sys.platform in ('cli', 'win32'):
     # noinspection PyUnresolvedReferences
     if sys.version_info > (3, 0):
         from winreg import *
@@ -322,7 +321,7 @@ def patchbase(name):
         f.seek(offset + 32)
         flag = ord(f.read(1))
         flag = set_bit(flag, 0)
-#        flag = chr(flag)
+        # flag = chr(flag)
         f.seek(offset + 32)
         f.write(bytes([flag]))
         print('GOS Patched flag @: ' + hex(offset))

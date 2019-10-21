@@ -87,6 +87,7 @@ def reporthook(count, block_size, total_size):
 	sys.stdout.flush()
 
 def main():
+
 	# Check minimal Python version is 2.7
 	if sys.version_info < (2, 7):
 		sys.stderr.write('You need Python 2.7 or later\n')
