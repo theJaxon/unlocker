@@ -27,10 +27,10 @@ elif [ -d /usr/lib/vmware/lib/libvmwarebase.so/ ]; then
 fi
 
 echo Patching...
-python2 ./unlocker.py
+python3 ./unlocker.py
 
 echo Getting VMware Tools...
-python gettools.py
+python3 gettools.py
 cp ./tools/darwin*.* /usr/lib/vmware/isoimages/
 
 echo Finished!
