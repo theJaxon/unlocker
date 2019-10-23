@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "Unlocker 3.0.2 for VMware Workstation"
+echo "Unlocker 3.0.3 for VMware Workstation"
 echo "====================================="
 echo "(c) Dave Parsons 2011-18"
 
@@ -27,10 +27,10 @@ elif [ -d /usr/lib/vmware/lib/libvmwarebase.so/ ]; then
 fi
 
 echo Patching...
-python3 ./unlocker.py
+python ./unlocker.py
 
 echo Getting VMware Tools...
-python3 gettools.py
+python gettools.py
 cp ./tools/darwin*.* /usr/lib/vmware/isoimages/
 
 echo Finished!
