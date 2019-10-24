@@ -73,7 +73,7 @@ class MyURLopener(urllib.FancyURLopener):
 def convertpath(path):
     # OS path separator replacement funciton
     return path.replace(os.path.sep, '/')
-	
+
 def reporthook(count, block_size, total_size):
 	global start_time
 	if count == 0:
@@ -88,6 +88,29 @@ def reporthook(count, block_size, total_size):
 					(percent, progress_size / (1024 * 1024), speed, time_remaining))
 	sys.stdout.flush()
 
+def CheckToolsFilesExists(dest):
+	filesFound = os.path.exists(convertpath(dest + '/tools/darwin.iso')) & os.path.exists(convertpath(dest + '/tools/darwinPre15.iso'))
+	askMsg = 'You already have downloaded the tools. Download again?[y/n]'
+
+	if filesFound:
+		while True:
+			# Ask if the user want to download again
+			if sys.version_info > (3, 0):
+			# Python 3 code in this block
+				userResponse = input(askMsg)
+			else:
+				# Python 2 code in this block
+				userResponse = raw_input(askMsg)
+			
+			if str(userResponse).upper() == 'Y':
+				return False
+			elif str(userResponse).upper() == 'N':
+				return True
+			else:
+				print('Must enter y or n. You pressed: ' + str(userResponse).upper())
+	else:
+		return False
+
 def main():
 	# Check minimal Python version is 2.7
 	if sys.version_info < (2, 7):
@@ -95,6 +118,11 @@ def main():
 		sys.exit(1)
 
 	dest = os.path.dirname(os.path.abspath(__file__))
+
+	# Try local file check
+	if(CheckToolsFilesExists(dest)):
+		# User as already download the tools and chosen not doing again
+		return
 
 	# Re-create the tools folder
 	shutil.rmtree(dest + '/tools', True)

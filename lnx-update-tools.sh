@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "Get macOS VMware Tools 3.0.2"
+echo "Get macOS VMware Tools 3.0.3"
 echo "==============================="
 echo "(c) Dave Parsons 2015-18"
 
