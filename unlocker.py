@@ -322,7 +322,7 @@ def patchbase(name):
         f.seek(offset + 32)
         flag = ord(f.read(1))
         flag = set_bit(flag, 0)
-#        flag = chr(flag)
+        # flag = chr(flag)
         f.seek(offset + 32)
         f.write(bytes([flag]))
         print('GOS Patched flag @: ' + hex(offset))
