@@ -170,7 +170,7 @@ def main():
 			# Python 2 code in this block
 			(f,headers)=MyURLopener().retrieve(urlpost15, convertpath(dest + '/tools/com.vmware.fusion.tools.darwin.zip.tar'), reporthook)
 	except:
-		# No tools found, get em from the core tar
+		# No tools found, get them from the core tar
 		print('Tools aren\'t here... Be patient while I download and' +
 			  ' give a look into the core.vmware.fusion.tar file')
 		urlcoretar = url + lastVersion + '/core/com.vmware.fusion.zip.tar'
@@ -212,7 +212,7 @@ def main():
 		print('Tools from core retrieved successfully')
 		return
 
-	# Tools have been found, go with the normal way
+	# Tools have been found in the packages folder, go with the normal way
 	
 	# Extract the tar to zip
 	tar = tarfile.open(convertpath(dest + '/tools/com.vmware.fusion.tools.darwin.zip.tar'), 'r')
