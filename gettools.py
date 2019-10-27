@@ -66,9 +66,13 @@ class CDSParser(HTMLParser):
     def clean(self):
         self.HTMLDATA = []
 
-
-class MyURLopener(urllib.FancyURLopener):
-    http_error_default = urllib.URLopener.http_error_default
+if sys.version_info > (3, 0):
+# Python 3 code in this block
+	pass
+else:
+	# Python 2 code in this block
+	class MyURLopener(urllib.FancyURLopener):
+		http_error_default = urllib.URLopener.http_error_default
 
 def convertpath(path):
     # OS path separator replacement funciton
