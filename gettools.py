@@ -178,7 +178,8 @@ def main():
 		print('Tools aren\'t here... Be patient while I download and' +
 			  ' give a look into the core.vmware.fusion.tar file')
 		urlcoretar = url + lastVersion + '/core/com.vmware.fusion.zip.tar'
-			  
+		print('Retrieving Darwin tools from: ' + urlcoretar)	
+
 		# Get the main core file
 		try:
 			if sys.version_info > (3, 0):
