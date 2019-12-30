@@ -11,7 +11,7 @@ macOS Unlocker V3.0 for VMware Workstation
 +-----------------------------------------------------------------------------+
 
 1. Introduction
----------------
+------------------
 
 Unlocker 3 is designed for VMware Workstation 11-15 and Player 7-15.
 
@@ -38,7 +38,7 @@ been shutdown.
 The code is written in Python.
 
 2. Prerequisites
-----------------
+-------------------
 
 The code requires Python 2.7 to work. Most Linux distros ship with a compatible
 Python interpreter and should work without requiring any additional software.
@@ -47,7 +47,7 @@ Windows Unlocker has a packaged version of the Python script using PyInstaller,
 and so does not require Python to be installed.
 
 3. Limitations
---------------
+-----------------
 
 If you are using VMware Player or Workstation on Windows you may get a core dump.
 
@@ -55,7 +55,7 @@ Latest Linux products are OK and do not show this problem.
 
 +-----------------------------------------------------------------------------+
 | IMPORTANT:                                                                  |
-| ==========                                                                  |
+| ============                                                                |
 |                                                                             |
 | If you create a new VM VMware may stop and create a core dump.              |
 | There are two options to work around this issue:                            |
@@ -67,7 +67,7 @@ Latest Linux products are OK and do not show this problem.
 +-----------------------------------------------------------------------------+
 
 4. Windows
-----------
+------------
 On Windows you will need to either run cmd.exe as Administrator or using
 Explorer right click on the command file and select "Run as administrator".
 
@@ -76,7 +76,7 @@ win-uninstall.cmd - restores VMware
 win-update-tools.cmd - retrieves latest macOS guest tools
 
 5. Linux
----------
+-----------
 On Linux you will need to be either root or use sudo to run the scripts.
 
 You may need to ensure the Linux scripts have execute permissions
@@ -87,7 +87,7 @@ lnx-uninstall.sh - restores VMware
 lnx-update-tools.sh - retrieves latest macOS guest tools
    
 6. Thanks
----------
+-----------
 
 Thanks to Zenith432 for originally building the C++ unlocker and Mac Son of Knife
 (MSoK) for all the testing and support.
@@ -98,7 +98,7 @@ modified the unlocker code to run on Python 3 in the ESXi 6.5 environment.
 
 
 History
--------
+---------
 27/09/18 3.0.0 - First release
 02/10/18 3.0.1 - Fixed gettools.py to work with Python 3 and correctly download darwinPre15.iso
 10/10/18 3.0.2 - Fixed false positives from anti-virus software with Windows executables
