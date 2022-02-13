@@ -44,7 +44,7 @@ xcopy /F /Y "%InstallPath%vmwarebase.dll" .\backup\
 
 echo.
 echo Patching...
-unlocker.exe
+python unlocker.py
 
 echo.
 echo Getting VMware Tools...
