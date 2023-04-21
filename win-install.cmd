@@ -44,11 +44,11 @@ xcopy /F /Y "%InstallPath%vmwarebase.dll" .\backup\
 
 echo.
 echo Patching...
-unlocker.exe
+python unlocker.py
 
 echo.
 echo Getting VMware Tools...
-gettools.exe
+python gettools.py
 xcopy /F /Y .\tools\darwin*.* "%InstallPath%"
 
 echo.
